@@ -14,7 +14,7 @@ while True:
    
    #img = cv2.resize(img,(340, 220))
    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-   panneaux = stop_cascade.detectMultiScale(gray, 1.3, 5)
+   panneaux = stop_cascade.detectMultiScale(gray, 1.3, 5) # paramètres : scaleFactor et minNeighbours
    for (x,y,w,h) in panneaux:
       cv2.rectangle(img, (x,y), (x+w,y+h), (0,255,0), 2)
       # traite le panneau dans une image a part
@@ -22,7 +22,7 @@ while True:
       #cv2.imshow('panneau STOP', panneau)
    
 
-   cv2.imshow('img', img)
+   cv2.imshow("Camera", img)
 
    key = cv2.waitKey(1)
    if key == 27: # touche esc
