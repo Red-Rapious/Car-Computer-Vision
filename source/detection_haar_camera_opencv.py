@@ -16,17 +16,17 @@ while True:
       print("Erreur : la VideoCapture n'a pas pu être lue")
       exit(0)
 
-   # Application des filtres HAAR
+   # Application des filtres HAAR pour rechercher les panneaux
    gray_img = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
    panneaux_stop = cascade_classifier.detectMultiScale(gray_img, 1.3, 5)
 
+   # Pour chaque panneau stop, on dessine un rectangle sur l'image et on ajoute du texte
    for (x,y,width,height) in panneaux_stop:
       cv2.rectangle(image, (x,y), (x+width,y+height), (0,255,0), 2)
-      global_size = (width+height)/2
-      img_text = cv2.putText(image, "Panneau stop", (x+int(global_size/5.5),y-int(global_size/20)), cv2.FONT_HERSHEY_SIMPLEX, global_size/340, (0,255,0), 2, cv2.LINE_AA)
+      global_size = (width+height)/2 # facteur global indiquant la taille de l'image
+      img_text = cv2.putText(image, "Panneau stop", (x+int(global_size/5.5),y-int(global_size/20)), cv2.FONT_HERSHEY_DUPLEX, global_size/340, (0,255,0), 2, cv2.LINE_AA)
 
-
-   cv2.imshow("Camera", image)
+   cv2.imshow("Camera", image) # affichage de l'image légèrement modifiée par l'ajout de texte et rectangles
 
    # Sortie de boucle si la touche ESC est pressée
    key = cv2.waitKey(1)
