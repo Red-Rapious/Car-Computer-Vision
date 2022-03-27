@@ -1,2 +1,2 @@
-# Car-Computer-Vision
-My TIPE project to create a neural engine to identify objects in an image or video
+# Car Computer Vision : détection d'objets dans un flux vidéo pour caméra embarquée sur un véhicule
+Mon projet de TIPE pour l'année 2023, visant la création d'un algorithme de détection d'objets dans une image.
