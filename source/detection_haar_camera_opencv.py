@@ -1,4 +1,5 @@
 import cv2
+from utilitaires import encadrer_objet
 
 # Ouverture de la caméra
 capture = cv2.VideoCapture(0)
@@ -6,8 +7,14 @@ if not capture.isOpened():
    print("Erreur : la caméra n'est pas allumée'")
    exit(0)
 
-# Importation du classificateur HAAR
-cascade_classifier = cv2.CascadeClassifier("ressources/classificateurs/Stop_classificateur.xml")
+# Importation des classificateurs HAAR
+stop_cascade_classifier = cv2.CascadeClassifier("ressources/classificateurs/Stop_classificateur.xml")
+visages_cascade_classifier = cv2.CascadeClassifier("ressources/classificateurs/Visage_classificateur.xml")
+# Le fichier HAAR récupéré sur internet pour la détection de piétons semble être de mauvaise qualité
+#pietons_cascade_classifier = cv2.CascadeClassifier("ressources/classificateurs/Pieton_classificateur.xml")
+voitures_cascade_classifier = cv2.CascadeClassifier("ressources/classificateurs/Voitures_classificateur.xml")
+feux_cascade_classifier = cv2.CascadeClassifier("ressources/classificateurs/Feu_classificateur.xml")
+
 
 # Boucle de détection d'image dans la caméra
 while True:
@@ -18,13 +25,23 @@ while True:
 
    # Application des filtres HAAR pour rechercher les panneaux
    gray_img = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-   panneaux_stop = cascade_classifier.detectMultiScale(gray_img, 1.3, 5)
+   panneaux_stop = stop_cascade_classifier.detectMultiScale(gray_img, 1.3, 5)
+   visages = visages_cascade_classifier.detectMultiScale(gray_img, 1.3, 5)
+   #pietons = pietons_cascade_classifier.detectMultiScale(gray_img, 1.3, 45)
+   voitures = voitures_cascade_classifier.detectMultiScale(gray_img, 1.3, 4)
+   feux = feux_cascade_classifier.detectMultiScale(gray_img, 1.3, 4)
 
    # Pour chaque panneau stop, on dessine un rectangle sur l'image et on ajoute du texte
    for (x,y,width,height) in panneaux_stop:
-      cv2.rectangle(image, (x,y), (x+width,y+height), (0,255,0), 2)
-      global_size = (width+height)/2 # facteur global indiquant la taille de l'image
-      img_text = cv2.putText(image, "Panneau stop", (x+int(global_size/5.5),y-int(global_size/20)), cv2.FONT_HERSHEY_DUPLEX, global_size/340, (0,255,0), 2, cv2.LINE_AA)
+      encadrer_objet(x, y, width, height, image, "Panneau stop")
+   for (x,y,width,height) in visages:
+      encadrer_objet(x, y, width, height, image, "Visage")
+   #for (x,y,width,height) in pietons:
+   #   encadrer_objet(x, y, width, height, image, "Pieton")
+   for (x,y,width,height) in voitures:
+      encadrer_objet(x, y, width, height, image, "Voiture")
+   for (x,y,width,height) in feux:
+      encadrer_objet(x, y, width, height, image, "Feu")
 
    cv2.imshow("Camera", image) # affichage de l'image légèrement modifiée par l'ajout de texte et rectangles
 
