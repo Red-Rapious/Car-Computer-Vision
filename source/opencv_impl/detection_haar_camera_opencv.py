@@ -1,8 +1,14 @@
 import cv2
 from utilitaires import encadrer_objet
 
+REAL_TIME_MODE = True
+
 # Ouverture de la caméra
-capture = cv2.VideoCapture(0)
+capture = None
+if REAL_TIME_MODE:
+   capture = cv2.VideoCapture(0)
+else:
+   capture = cv2.VideoCapture("ressources/videos/Parc_naturel.mp4")
 if not capture.isOpened():
    print("Erreur : la caméra n'est pas allumée'")
    exit(0)
@@ -33,13 +39,13 @@ while True:
 
    # Pour chaque panneau stop, on dessine un rectangle sur l'image et on ajoute du texte
    for (x,y,width,height) in panneaux_stop:
-      encadrer_objet(x, y, width, height, image, "Panneau stop")
+      encadrer_objet(x, y, width, height, image, "Panneau stop", (255, 0, 0))
    for (x,y,width,height) in visages:
       encadrer_objet(x, y, width, height, image, "Visage")
    #for (x,y,width,height) in pietons:
    #   encadrer_objet(x, y, width, height, image, "Pieton")
    for (x,y,width,height) in voitures:
-      encadrer_objet(x, y, width, height, image, "Voiture")
+      encadrer_objet(x, y, width, height, image, "Voiture", (255, 0, 0))
    for (x,y,width,height) in feux:
       encadrer_objet(x, y, width, height, image, "Feu")
 
