@@ -1,6 +1,6 @@
 import numpy as np # utilisation de numpy pour accéler les calculs
 
-def integral_image(image): # a' array array -> a' array array
+def integral_image(image: list) -> list: # a' array array -> a' array array
     """ Convertit une image en son image intégrale """
     ii = np.zeros(image.shape)
     s = np.zeros(image.shape)

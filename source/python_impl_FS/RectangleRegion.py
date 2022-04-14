@@ -5,7 +5,7 @@ class RectangleRegion:
         self.width = width
         self.height = height
 
-    def compute_feature(self, ii): # a' array array -> int
+    def compute_feature(self, ii: list) -> int: # a' array array -> int
         """ Calcule la valeur de l'image intégrale 
         dans la zone de cette région rectangulaire """
         p00 = ii[self.x][self.y]
