@@ -1,6 +1,7 @@
 import numpy as np
 import copy
 from RectangleRegion import RectangleRegion
+from utilitaires import evalutation
 
 class ViolaJones:
     def __init__(self, feature_number: int):
@@ -33,6 +34,9 @@ class ViolaJones:
                 weights[i] = 1.0 / (2 * pos_count)
             else:
                 weights[i] = 1.0 / (2 * neg_count)
+
+        features = self.build_features(training_data[0][0].shape)
+        X, y = self.apply_features(features, training_data)
 
     def build_features(self, image_shape: tuple) -> list:
         """
@@ -78,15 +82,6 @@ class ViolaJones:
                         # -- Features à 4 rectangles
                         features.append(([right, bottom], [immediate, bottom_right]))
         return features
-
-    def __evalutation(self, ii: list, positive_region: RectangleRegion, negative_region: RectangleRegion) -> int:
-        """ Fonction privée d'évaluation de la précision d'une feature sur une image intégrale """
-        score = 0
-        for pos in positive_region:
-            score += pos.compute_feature(ii)
-        for neg in negative_region:
-            score -= neg.compute_feature(ii)
-        return score
 
     def apply_features(self, features: list, training_data: list) -> tuple:
         """ Evalue chaque feature sur chaque exemple d'entraînement """
