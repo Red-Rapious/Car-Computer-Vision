@@ -1,14 +1,18 @@
 import numpy as np
 import copy
 from RectangleRegion import RectangleRegion
-from source.python_impl_FS.WeakClassifier import WeakClassifier
+from WeakClassifier import WeakClassifier
 from utilitaires import evaluation
+
+from sklearn.feature_selection import SelectPercentile, f_classif
 
 class ViolaJones:
     def __init__(self, feature_number: int):
         self.feature_number = feature_number
+        self.alphas = []
+        self.classifiers = []
 
-    def train(self, training: list) -> None: # (a' array array, bool) array -> void
+    def train(self, training: list, percentile:int=10) -> None:
         """
         Entraîne les classificateurs à partir des données fournies.
         training : (ii, is_positive_example) array
@@ -38,6 +42,24 @@ class ViolaJones:
 
         features = self.build_features(training_data[0][0].shape)
         X, y = self.apply_features(features, training_data)
+        
+        # Utilisation du module SciKit-Learn pour choisir les features les plus importantes
+        indices = SelectPercentile(f_classif, percentile=percentile).fit(X.T, y).get_support(indices=True)
+        X = X[indices]
+        features = features[indices]
+
+        for t in range(self.feature_number):
+            weak_classifiers = self.train_weak_classifiers(X, y, features, weights)
+            clf, error, accuracy = self.select_best_classifier(weak_classifiers, weights, training_data)
+
+            beta = error / (1.0 - error)
+            for i in range(len(accuracy)):
+                weights[i] = weights[i] * (beta ** (1 - accuracy[i]))
+            alpha = -np.log(beta)
+            self.alphas.append(alpha)
+            self.classifiers.append(clf)
+        
+
 
     def build_features(self, image_shape: tuple) -> list:
         """
@@ -114,21 +136,24 @@ class ViolaJones:
                 total_neg += 1
         
         classifiers = []
-        total_features = len(X) # TODO: check if len(X) == X.shape[0]
-        for i, feature in enumerate(X):
+        total_features = len(X)
+        for feature in X:
             # Affichage de la progression du classement, qui peut être long
             if len(classifiers) % 1000 == 0 and len(classifiers) != 0:
                 percentage = str(int(100 * len(classifiers) / total_features))
                 print("[Progression] :", len(classifiers), "sur", total_features, "(" + percentage + " %)")
             
-            # TODO: describe section 2
+            # Recherche du classifier avec la plus petite erreur
             applied_feature = sorted(zip(weight, feature, y), key= lambda x: x[1])
             pos_seen, neg_seen = 0, 0
             pos_weights, neg_weights = 0, 0
             min_error, best_feature, best_treshold, best_polarity = float("inf"), None, None, None
 
             for w, f, is_positive in applied_feature:
+                # Calcul de l'erreur
                 error = min(neg_weights + total_pos - pos_weights, pos_weights - total_neg - neg_weights)
+                
+                # Mise à jour des élements avec erreur minimale
                 if error < min_error:
                     min_error = error
                     best_weight = w
@@ -141,7 +166,25 @@ class ViolaJones:
                     neg_seen += 1
                     neg_weights += w
             
+            # Création et ajout du classificateur optimal
             classifier = WeakClassifier(best_feature[0], best_feature[1], best_treshold, best_polarity)
             classifiers.append(classifier)
         
         return classifiers
+
+    def select_best_classifier(self, classifiers: list, weights: list, training_data: list) -> list:
+        """ Choisit le meilleur classificateur """
+        
+        best_clf, best_error, best_accuracy = None, float("inf"), None
+        
+        for clf in classifiers:
+            error, accuracy = 0, []
+            for data, w in zip(training_data, weights):
+                correctness = abs(clf.classify(data[0]) - data[1])
+                accuracy.append(correctness)
+                error += w * correctness
+            error = error/len(training_data)
+            if error < best_error:
+                best_clf, best_error, best_accuracy = clf, error, accuracy
+        
+        return best_clf, best_error, best_accuracy
