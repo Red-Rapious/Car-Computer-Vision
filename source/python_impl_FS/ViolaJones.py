@@ -1,7 +1,7 @@
 import numpy as np
 import copy
 from RectangleRegion import RectangleRegion
-from utilitaires import evalutation
+from utilitaires import evaluation
 
 class ViolaJones:
     def __init__(self, feature_number: int):
@@ -91,7 +91,7 @@ class ViolaJones:
 
         i = 0
         for pos, neg in features:
-            X[i] = [self.__evaluation(training_data[j][0], pos, neg) for j in range(len(training_data))]
+            X[i] = [evaluation(training_data[j][0], pos, neg) for j in range(len(training_data))]
             i += 1
 
         return X, y

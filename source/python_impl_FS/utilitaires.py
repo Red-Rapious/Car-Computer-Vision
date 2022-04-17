@@ -13,7 +13,7 @@ def integral_image(image: list) -> list: # a' array array -> a' array array
             ii[x][y] = (ii[x-1][y] if x>=1 else 0) + s[x][y]
     return ii
 
-def evalutation(ii: list, positive_region: RectangleRegion, negative_region: RectangleRegion) -> int:
+def evaluation(ii: list, positive_region: RectangleRegion, negative_region: RectangleRegion) -> int:
     """ Fonction d'évaluation de la précision d'une feature sur une image intégrale """
     score = 0
     for pos in positive_region:
