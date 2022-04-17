@@ -7,7 +7,7 @@ from RectangleRegion import RectangleRegion
 import cv2
 from time import sleep
 
-def features_count_graph(start: int, stop: int, step: int, ratio: float=16/9):
+def features_count_graph(start: int, stop: int, step: int, ratio: float=16/9) -> None:
     """ Trace le nombre de features possibles contenues
     pour des images verticales de hauteurs allant de 'start' à 'stop' 
     avec un pas de 'step' et ayant un ratio 'ratio' """
@@ -24,7 +24,7 @@ def features_count_graph(start: int, stop: int, step: int, ratio: float=16/9):
 
 #features_count_graph(10, 30, 2)
 
-def draw_rectangle(image, angle1: tuple, angle2: tuple, is_positive: bool):
+def draw_rectangle(image, angle1: tuple, angle2: tuple, is_positive: bool) -> None:
     col = (255, 255, 255) if is_positive else (0, 0, 0)
     for x in range(angle1[0], angle2[0] + 1):
         for y in range(angle1[1], angle2[1] + 1):
@@ -33,7 +33,7 @@ def draw_rectangle(image, angle1: tuple, angle2: tuple, is_positive: bool):
     #cv2.rectangle(image, angle1, angle2, col, 2)
 
 
-def draw_weakclassifier_on_image(image: list, weak_classifier: WeakClassifier):
+def draw_weakclassifier_on_image(image: list, weak_classifier: WeakClassifier) -> None:
     """ Dessine la feature d'un WeakClassifier sur une image avec OpenCV """
     is_polarity_pos = True if weak_classifier.polarity == 1 else False
     for region in weak_classifier.positive_regions:
@@ -42,7 +42,7 @@ def draw_weakclassifier_on_image(image: list, weak_classifier: WeakClassifier):
         draw_rectangle(image, (region.x, region.y), (region.x + region.width, region.y + region.height), not is_polarity_pos)
 
 
-def main():
+def main() -> None:
     """ Programme de test """
     capture = cv2.VideoCapture("ressources/videos/Parc_naturel.mp4")
     classifier = WeakClassifier([RectangleRegion(100, 100, 50, 50), RectangleRegion(150, 150, 50, 50)], [RectangleRegion(150, 100, 50, 50), RectangleRegion(100, 150, 50, 50)], 0.0, -1)

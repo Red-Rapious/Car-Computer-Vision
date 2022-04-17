@@ -1,6 +1,7 @@
 import numpy as np
 import copy
 from RectangleRegion import RectangleRegion
+from source.python_impl_FS.WeakClassifier import WeakClassifier
 from utilitaires import evaluation
 
 class ViolaJones:
@@ -95,3 +96,52 @@ class ViolaJones:
             i += 1
 
         return X, y
+
+    def train_weak_classifiers(self, X: list, y: list, features: list, weight: list) -> list:
+        """ 
+        Entraîne les Weak Classifiers à l'aide de la méthode de calcul de l'erreur
+        Attention, cette fonction est naturellement longue à exécuter 
+        
+        classifiers: WeakClassifiers list
+        """
+
+        # Compte le nombre de classificateurs positifs et négatifs
+        total_pos, total_neg = 0, 0
+        for w, is_positive in zip(weight, y):
+            if is_positive:
+                total_pos += 1
+            else:
+                total_neg += 1
+        
+        classifiers = []
+        total_features = len(X) # TODO: check if len(X) == X.shape[0]
+        for i, feature in enumerate(X):
+            # Affichage de la progression du classement, qui peut être long
+            if len(classifiers) % 1000 == 0 and len(classifiers) != 0:
+                percentage = str(int(100 * len(classifiers) / total_features))
+                print("[Progression] :", len(classifiers), "sur", total_features, "(" + percentage + " %)")
+            
+            # TODO: describe section 2
+            applied_feature = sorted(zip(weight, feature, y), key= lambda x: x[1])
+            pos_seen, neg_seen = 0, 0
+            pos_weights, neg_weights = 0, 0
+            min_error, best_feature, best_treshold, best_polarity = float("inf"), None, None, None
+
+            for w, f, is_positive in applied_feature:
+                error = min(neg_weights + total_pos - pos_weights, pos_weights - total_neg - neg_weights)
+                if error < min_error:
+                    min_error = error
+                    best_weight = w
+                    best_feature = f
+                    best_polarity = 1 if pos_seen > neg_seen else -1
+                if is_positive:
+                    pos_seen += 1
+                    pos_weights += w
+                else:
+                    neg_seen += 1
+                    neg_weights += w
+            
+            classifier = WeakClassifier(best_feature[0], best_feature[1], best_treshold, best_polarity)
+            classifiers.append(classifier)
+        
+        return classifiers
