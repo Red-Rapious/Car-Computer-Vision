@@ -9,6 +9,13 @@ class CascadeClassifier:
         self.classifiers = []
 
     def train(self, training: list):
+        """
+        Entraîne les classificateurs à partir des données fournies.
+        training: (ii, is_positive_example) array
+            ii: image intégrale de l'image d'entraînement (a' array array)
+            is_positive_example : 'True' si l'image contient l'objet cherché (bool)
+        """
+
         pos, neg = [], []
 
         for example in training:
@@ -33,6 +40,7 @@ class CascadeClassifier:
             neg = false_positives
 
     def classify(self, image:list):
+        """ Indique si une image contient ou non l'objet précédement classifié """
         for clf in self.classifiers:
             if not clf.classify(image):
                 return False

@@ -24,7 +24,7 @@ def features_count_graph(start: int, stop: int, step: int, ratio: float=16/9) ->
 
 #features_count_graph(10, 30, 2)
 
-def draw_rectangle(image, angle1: tuple, angle2: tuple, is_positive: bool) -> None:
+def fill_rectangle(image, angle1: tuple, angle2: tuple, is_positive: bool) -> None:
     col = (255, 255, 255) if is_positive else (0, 0, 0)
     for x in range(angle1[0], angle2[0] + 1):
         for y in range(angle1[1], angle2[1] + 1):
@@ -37,9 +37,9 @@ def draw_weakclassifier_on_image(image: list, weak_classifier: WeakClassifier) -
     """ Dessine la feature d'un WeakClassifier sur une image avec OpenCV """
     is_polarity_pos = True if weak_classifier.polarity == 1 else False
     for region in weak_classifier.positive_regions:
-        draw_rectangle(image, (region.x, region.y), (region.x + region.width, region.y + region.height), is_polarity_pos)
+        fill_rectangle(image, (region.x, region.y), (region.x + region.width, region.y + region.height), is_polarity_pos)
     for region in weak_classifier.negative_regions:
-        draw_rectangle(image, (region.x, region.y), (region.x + region.width, region.y + region.height), not is_polarity_pos)
+        fill_rectangle(image, (region.x, region.y), (region.x + region.width, region.y + region.height), not is_polarity_pos)
 
 
 def main() -> None:

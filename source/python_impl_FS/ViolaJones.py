@@ -16,10 +16,12 @@ class ViolaJones:
     def train(self, training: list, percentile:int=10) -> None:
         """
         Entraîne les classificateurs à partir des données fournies.
-        training : (ii, is_positive_example) array
-        ii: image intégrale de l'image d'entraînement (a' array array)
-        is_positive_example : 'True' si l'image contient l'objet cherché (bool)
+        training: (ii, is_positive_example) array
+            ii: image intégrale de l'image d'entraînement (a' array array)
+            is_positive_example : 'True' si l'image contient l'objet cherché (bool)
+        percentile: pourcentage du nombre de features à garder avec SciKit-Learn
         """
+        
         training_data = copy.deepcopy(training)
 
         # Comptage du nombres d'exemples positifs et négatifs

@@ -1,3 +1,5 @@
+# Créé par Mathieu Spiegel
+
 import cv2
 
 class Camera:
