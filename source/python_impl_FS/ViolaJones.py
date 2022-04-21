@@ -1,8 +1,9 @@
+from copyreg import pickle
 import numpy as np
 import copy
 from RectangleRegion import RectangleRegion
 from WeakClassifier import WeakClassifier
-from utilitaires import evaluation
+from utilitaires import evaluation, integral_image
 
 from sklearn.feature_selection import SelectPercentile, f_classif
 
@@ -188,3 +189,24 @@ class ViolaJones:
                 best_clf, best_error, best_accuracy = clf, error, accuracy
         
         return best_clf, best_error, best_accuracy
+
+    def classify(self, image: list) -> bool:
+        """ Indique si une image contient ou non l'objet précédement classifié """
+        total = 0
+        ii = integral_image(image)
+        
+        for (alpha, clf) in zip(self.alphas, self.classifiers):
+            total += alpha * clf.classify(ii)
+        
+        return total >= 0.5 * sum(self.alphas)
+
+    def save(self, filename=str) -> None:
+        """ Utilise le module Pickle pour sauvegarder le modèle entraîné"""
+        with open(filename + ".pkl", "wb") as f:
+            pickle.dump(self, f)
+
+    @staticmethod
+    def load(self, filename=str):
+        """ Utilise le module Pickle pour charger un modèle enregistré """
+        with open(filename + ".pkl", 'r') as f:
+            return pickle.load(f)
