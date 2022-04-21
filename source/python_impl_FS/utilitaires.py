@@ -1,5 +1,6 @@
 import numpy as np # utilisation de numpy pour accéler les calculs
 import RectangleRegion
+import os
 
 def integral_image(image: list) -> list: # a' array array -> a' array array
     """ Convertit une image en son image intégrale """
@@ -21,3 +22,18 @@ def evaluation(ii: list, positive_region: RectangleRegion, negative_region: Rect
     for neg in negative_region:
         score -= neg.compute_feature(ii)
     return score
+
+def load_images(positive_folder: str, negative_folder: str, extention:str=".pgm"):
+    """ Charge les images des dossiers indiqués, et les transformes en tableaux """
+    # Récupération des noms de fichiers de toutes les images de test
+    positive_images = []
+    for root, dirs, files in os.walk(positive_folder):
+        for file in files:
+            if file.endswith(extention):
+                positive_images.append(os.path.join(root,file))
+
+    negative_images = []
+    for root, dirs, files in os.walk(negative_folder):
+        for file in files:
+            if file.endswith(extention):
+                negative_images.append(os.path.join(root,file))
