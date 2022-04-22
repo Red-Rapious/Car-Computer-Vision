@@ -1,8 +1,12 @@
+READING_MODE = "CV2" #TODO: changer pour une enum
+
+
 import numpy as np # utilisation de numpy pour accéler les calculs
 import RectangleRegion
 import os
+import cv2
 
-def integral_image(image: list) -> list: # a' array array -> a' array array
+def integral_image(image: list) -> list: # int array array -> int array array
     """ Convertit une image en son image intégrale """
     ii = np.zeros(image.shape)
     s = np.zeros(image.shape)
@@ -23,17 +27,36 @@ def evaluation(ii: list, positive_region: RectangleRegion, negative_region: Rect
         score -= neg.compute_feature(ii)
     return score
 
-def load_images(positive_folder: str, negative_folder: str, extention:str=".pgm"):
-    """ Charge les images des dossiers indiqués, et les transformes en tableaux """
+def read_image(path: str) -> list: # str -> int array array
+    if READING_MODE == "CV2":
+            return cv2.imread(path, -1)
+    else:
+        print("[Erreur] Mode de lecture de l'image non défini")
+        exit(0)
+
+def load_images(positive_folder: str, negative_folder: str, extention:str=".pgm") -> list:
+    """ Charge les images des dossiers indiqués, et les transforme en tableaux.
+                str, str, str -> (int array array, bool) array """
+    training_data = []
+    
     # Récupération des noms de fichiers de toutes les images de test
-    positive_images = []
+    positive_images_paths = []
     for root, dirs, files in os.walk(positive_folder):
         for file in files:
             if file.endswith(extention):
-                positive_images.append(os.path.join(root,file))
+                positive_images_paths.append(os.path.join(root,file))
 
-    negative_images = []
+    negative_images_paths = []
     for root, dirs, files in os.walk(negative_folder):
         for file in files:
             if file.endswith(extention):
-                negative_images.append(os.path.join(root,file))
+                negative_images_paths.append(os.path.join(root,file))
+
+    # Ajout de chaque image sous forme d'un tableau de nombres
+    for path in positive_images_paths:
+        training_data.append((read_image(path), True))
+
+    for path in negative_images_paths:
+        training_data.append((read_image(path), False))
+
+    return training_data
