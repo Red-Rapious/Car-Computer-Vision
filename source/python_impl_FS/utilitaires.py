@@ -1,10 +1,11 @@
-READING_MODE = "CV2" #TODO: changer pour une enum
+READING_MODE = "CUSTOM" #TODO: changer pour une enum
 
 
 import numpy as np # utilisation de numpy pour accéler les calculs
 import RectangleRegion
 import os
 import cv2
+from random import randrange
 
 def integral_image(image: list) -> list: # int array array -> int array array
     """ Convertit une image en son image intégrale """
@@ -28,8 +29,24 @@ def evaluation(ii: list, positive_region: RectangleRegion, negative_region: Rect
     return score
 
 def read_image(path: str) -> list: # str -> int array array
+    """ Lit une image à partir d'un chemin de fichier.
+    Le mode de lecture dépend de la constante READING_MODE définie plus haut """
     if READING_MODE == "CV2":
-            return cv2.imread(path, -1)
+        return cv2.imread(path, -1)
+    elif READING_MODE == "CUSTOM":
+        with open(path, 'rb') as file:
+            assert file.readline() == b"P5\n"
+            (width, height) = [int(i) for i in file.readline().split()]
+            depth = int(file.readline())
+            assert depth <= 255
+
+            raster = []
+            for y in range(height):
+                row = []
+                for y in range(width):
+                    row.append(ord(file.read(1)))
+                raster.append(row)
+            return raster
     else:
         print("[Erreur] Mode de lecture de l'image non défini")
         exit(0)
@@ -60,3 +77,11 @@ def load_images(positive_folder: str, negative_folder: str, extention:str=".pgm"
         training_data.append((read_image(path), False))
 
     return training_data
+
+
+images = load_images("ressources/training_data/train/face", "ressources/training_data/train/non-face")
+gray_image = cv2.cvtColor(np.array(images[randrange(len(images))][0]).astype('uint8'), cv2.COLOR_GRAY2BGR)
+
+cv2.imshow("image", gray_image)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
