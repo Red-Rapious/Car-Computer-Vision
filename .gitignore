@@ -133,3 +133,5 @@ dmypy.json
 ressources/videos/*
 ressources/training_data/test
 ressources/training_data/train
+
+*.weights
