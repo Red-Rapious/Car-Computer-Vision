@@ -1,7 +1,7 @@
 import cv2
 from utilitaires import encadrer_objet
 
-REAL_TIME_MODE = False
+REAL_TIME_MODE = True
 
 # Ouverture de la caméra
 capture = None
