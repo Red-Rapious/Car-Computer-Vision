@@ -14,10 +14,12 @@ def encadrer_objet(x: int, y: int, width: int, height: int, image, texte: str, c
 
 def calculer_distance(width: int):
    """ Fonction calculant la distance entre la caméra et l'objet à détecter """
-   w_ref_img = 190   # en pixel, taille sur l'écran de l'objet pendant la référence
-   dist_ref = 30     # en cm, distance entre la caméra et l'objet pendant la référence
+   screen_width = 190   # en pixel, taille sur l'écran de l'objet pendant la référence
+   ref_dist = 30     # en cm, distance entre la caméra et l'objet pendant la référence
    real_width = 5.8  # en cm, vraie taille de l'objet pendant la référence
+
+   detected_object_width = 8
    
-   focal = (w_ref_img* dist_ref)/ real_width
-   distance = ((real_width * focal)/width)*10**-2  # distance en mètres du panneau
+   focal = (screen_width * ref_dist) / real_width
+   distance = ((detected_object_width * focal)/width)*10**-2  # distance en mètres du panneau
    return distance
