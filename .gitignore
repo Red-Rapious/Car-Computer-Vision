@@ -135,3 +135,8 @@ ressources/training_data/test
 ressources/training_data/train
 
 *.weights
+
+*.aux
+*.fls
+*.fdb_latexmk
+*.synctex.gz

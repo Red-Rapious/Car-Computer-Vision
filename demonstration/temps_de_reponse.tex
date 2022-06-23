@@ -1,0 +1,72 @@
+\documentclass[12pt,a4paper]{article} 
+
+\usepackage[a4paper,margin=2cm]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{pslatex}
+\usepackage[utf8]{inputenc}
+\usepackage[greek,francais]{babel} 
+\usepackage{graphicx} 
+\usepackage{amsmath} 
+\setlength{\unitlength}{1mm}
+\usepackage{enumitem}
+\usepackage{cancel}
+\usepackage{amssymb} % pour les ensembles NN
+\usepackage{mathrsfs} % pour les hypothèses de récurrences \PP
+\usepackage{fancyhdr}
+\usepackage[boldLipsian,10pt,GlyphNames]{teubner}
+\usepackage{fancybox}
+\usepackage{multicol}
+
+\lhead{Antoine Groudiev}
+\chead{}
+\rhead{MP*, Charlemange}
+
+\lfoot{\jobname.tex}
+\cfoot{Temps de réponse}
+\rfoot{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0.4pt}
+
+\author{Antoine Groudiev}
+\title{Temps de réponse maximal}
+\date{\today} 
+
+\begin{document}
+\maketitle
+On modélise le freinage dans le pire cas tel que la vitesse reste constante, égale à $v$, sur une distance $d_f$, puis passant instantanément à $0$.
+\section{Constantes}
+    On pose :
+    \begin{enumerate}
+        \item $v$, la vitesse de la voiture, maximale dans le pire cas
+        \item $d_f$, la distance de freinage de la voiture, maximale dans le pire cas
+        \item $d_d$, la distance de détection du panneau, minimale dans le pire cas
+    \end{enumerate}
+
+\section{Inconnues}
+    On cherche à déterminer :
+    \begin{enumerate}
+        \item $\tau_{max}$, le temps aloué pour traiter une image, qu'on cherche à maximiser
+        \item $f$, la fréquence de rafraichissement de la détection de panneau, qu'on cherche à minimiser
+    \end{enumerate}
+
+    On a la relation :
+    $$f = \frac{1}{\tau_{max}}$$
+\section{Cahier des charges}
+    On veut détecter le panneau de telle sorte que la voiture s'arrête avant le panneau. 
+    Ainsi, la distance allouée à l'algorithme pour traiter l'image est de :
+    $$d = d_d - d_f$$
+    En multipliant par $v$ :
+    $$\boxed{\tau_{max} = \frac{d_d - d_f}{v}}$$
+    on a également :
+    $$\boxed{f = \frac{v}{d_d - d_f}}$$
+
+\section{Application numérique}
+On utilise les valeurs expérimentales suivantes :
+\begin{enumerate}
+    \item $v = 25 \, km.h^{-1}$
+    \item $d_f = 0,50 \, m$ dans le pire cas
+    \item $d_d = 3,1 \, m$
+\end{enumerate}
+L'application numérique donne $\boxed{\tau_{max} = 0,36 \, s}$ et $\boxed{f = 2.8 \, Hz}$.
+
+\end{document}
