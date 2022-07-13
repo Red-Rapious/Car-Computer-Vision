@@ -81,7 +81,7 @@ def evaluate(clf, data):
 
 if __name__ == "__main__":
     print("[DEBUT DU PROGRAMME]")
-    print("Paramètres : T = %d (nombre de features)" % T)
+    print("Paramètres : T = %d (nombre de classificateurs faibles)" % T)
     print("[Entraînement du modèle] ...")
     temps_depart = time.time()
     train_viola(1)

@@ -87,8 +87,12 @@ class ViolaJones:
         for w in range(1, width+1):
             for h in range(1, height+1):
                 # Pour toutes les dimensions possibles de rectangles
-                for x in range(width-w-1):
-                    for y in range(height-h-1):
+                #for x in range(width-w):
+                #    for y in range(height-h):
+                x = 0
+                while x + w < width:
+                    y = 0
+                    while y + h < height:
                         # Pour tous les rectangles possibles
                         
                         # -- Création des différentes sous-zones possibles
@@ -109,12 +113,16 @@ class ViolaJones:
 
                         # -- Features à 3 rectangles
                         if x + 3 * w < width: # Adjacent horizontalement
-                            features.append(([right], [immediate, right_2]))
+                            features.append(([right], [right_2, immediate]))
                         if y + 3 * h < height: # Adjacent horizontalement
-                            features.append(([bottom], [immediate, bottom_2]))
+                            features.append(([bottom], [bottom_2, immediate]))
 
                         # -- Features à 4 rectangles
-                        features.append(([right, bottom], [immediate, bottom_right]))
+                        if x + 2 * w < width and y + 2 * h < height:
+                            features.append(([right, bottom], [immediate, bottom_right]))
+
+                        y += 1
+                    x += 1
         return features
 
     def apply_features(self, features: list, training_data: list) -> tuple:
