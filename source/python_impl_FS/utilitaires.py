@@ -12,11 +12,11 @@ def integral_image(image: list) -> list: # int array array -> int array array
     ii = np.zeros(image.shape)
     s = np.zeros(image.shape)
 
-    for x in range(len(image)):
-        for y in range(len(image[0])):
+    for y in range(len(image)):
+        for x in range(len(image[y])):
             # relation de récurrence définie par Viola-Jones
-            s[x][y] = (s[x][y-1] if y>=1 else 0) + image[x][y]
-            ii[x][y] = (ii[x-1][y] if x>=1 else 0) + s[x][y]
+            s[y][x] = (s[y-1][x] if y>=1 else 0) + image[y][x]
+            ii[y][x] = (ii[y][x-1] if x>=1 else 0) + s[y][x]
     return ii
 
 def evaluation(ii: list, positive_region: RectangleRegion, negative_region: RectangleRegion) -> int:

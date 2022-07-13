@@ -81,9 +81,11 @@ def evaluate(clf, data):
 
 if __name__ == "__main__":
     print("[DEBUT DU PROGRAMME]")
-    print("[Entraînement du modèle]")
     print("Paramètres : T = %d (nombre de features)" % T)
+    print("[Entraînement du modèle] ...")
+    temps_depart = time.time()
     train_viola(1)
+    print("Temps d'entraînement total : %f" % (time.time() - temps_depart))
     print("[Test du modèle]")
     test_viola(SAVE_FOLDER + str(T) + ".pkl")
 

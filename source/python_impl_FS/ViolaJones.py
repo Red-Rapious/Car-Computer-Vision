@@ -22,9 +22,11 @@ class ViolaJones:
         percentile: pourcentage du nombre de features à garder avec SciKit-Learn
         """
         
+        print("Copie des données d'entraînement...")
         training_data = copy.deepcopy(training)
 
         # Comptage du nombres d'exemples positifs et négatifs
+        print("Comptage des exemples...")
         pos_count = 0
         neg_count = 0
         for (ii, is_positive_example) in training_data:
@@ -34,6 +36,7 @@ class ViolaJones:
                 neg_count += 1
         
         # Calcul des poids
+        print("Calcul des poids...")
         #weights = np.array([1.0 / (2 * (pos_count if training_data[i][1] else neg_count)) for i in range(len(training_data))])
         weights = np.zeros(len(training_data))
         for i in range(len(training_data)):
@@ -43,13 +46,18 @@ class ViolaJones:
             else:
                 weights[i] = 1.0 / (2 * neg_count)
 
+        print("Création des features...")
         features = self.build_features(training_data[0][0].shape)
+        print(str(len(features)) + " features créées.")
+        print("Appliquation des features...")
         X, y = self.apply_features(features, training_data)
         
         # Utilisation du module SciKit-Learn pour choisir les features les plus importantes
+        print("Sélection des features (SciKit)...")
         indices = SelectPercentile(f_classif, percentile=percentile).fit(X.T, y).get_support(indices=True)
         X = X[indices]
         features = features[indices]
+        print(str(len(features)) + " features conservées.")
 
         for t in range(self.feature_number):
             weak_classifiers = self.train_weak_classifiers(X, y, features, weights)
@@ -79,8 +87,8 @@ class ViolaJones:
         for w in range(1, width+1):
             for h in range(1, height+1):
                 # Pour toutes les dimensions possibles de rectangles
-                for x in range(width-w):
-                    for y in range(height-h):
+                for x in range(width-w-1):
+                    for y in range(height-h-1):
                         # Pour tous les rectangles possibles
                         
                         # -- Création des différentes sous-zones possibles
@@ -117,8 +125,11 @@ class ViolaJones:
 
         i = 0
         for pos, neg in features:
+            if i%1000 == 0:
+                print(str(i) + "/" + str(len(features)), end="\t")
             X[i] = [evaluation(training_data[j][0], pos, neg) for j in range(len(training_data))]
             i += 1
+        print("\n")
 
         return X, y
 
