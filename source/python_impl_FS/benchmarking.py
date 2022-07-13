@@ -1,4 +1,3 @@
-from operator import xor
 import matplotlib.pyplot as plt
 import numpy as np
 from ViolaJones import ViolaJones
@@ -56,3 +55,5 @@ def main() -> None:
         key = cv2.waitKey(1)
         if key == 27:
             break
+
+main()

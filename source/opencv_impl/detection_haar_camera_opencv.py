@@ -1,5 +1,6 @@
 import cv2
 from utilitaires import encadrer_objet
+import time
 
 REAL_TIME_MODE = True
 
@@ -21,7 +22,7 @@ visages_cascade_classifier = cv2.CascadeClassifier("ressources/classificateurs/V
 voitures_cascade_classifier = cv2.CascadeClassifier("ressources/classificateurs/Voitures_classificateur.xml")
 feux_cascade_classifier = cv2.CascadeClassifier("ressources/classificateurs/Feu_classificateur.xml")
 
-
+frame_precendente = time.time()
 # Boucle de détection d'image dans la caméra
 while True:
    rtbool, image = capture.read() # lecture de la caméra
@@ -48,6 +49,13 @@ while True:
       encadrer_objet(x, y, width, height, image, "Voiture", (255, 0, 0))
    for (x,y,width,height) in feux:
       encadrer_objet(x, y, width, height, image, "Feu")
+
+   frame_actuelle = time.time()
+   delta = frame_actuelle - frame_precendente
+   frame_precendente = frame_actuelle
+
+   #cv2.putText(image, "Delta: " + str(round(delta, 3)) + "s", (10, 20), cv2.FONT_HERSHEY_DUPLEX, 0.7, (0, 255, 0), 2, cv2.LINE_AA)
+   cv2.putText(image, "FPS: " + str(round(1/delta, 3)), (10, 40), cv2.FONT_HERSHEY_DUPLEX, 0.7, (0, 255, 0), 2, cv2.LINE_AA)
 
    cv2.imshow("Camera", image) # affichage de l'image légèrement modifiée par l'ajout de texte et rectangles
 

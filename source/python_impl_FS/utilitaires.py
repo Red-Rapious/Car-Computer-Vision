@@ -79,9 +79,12 @@ def load_images(positive_folder: str, negative_folder: str, extention:str=".pgm"
     return training_data
 
 
-images = load_images("ressources/training_data/train/face", "ressources/training_data/train/non-face")
-gray_image = cv2.cvtColor(np.array(images[randrange(len(images))][0]).astype('uint8'), cv2.COLOR_GRAY2BGR)
+if __name__ == "__main__":
+    images = load_images("ressources/training_data/train/face", "ressources/training_data/train/non-face")
+    gray_image = cv2.cvtColor(np.array(images[randrange(len(images))][0]).astype('uint8'), cv2.COLOR_GRAY2BGR)
 
-cv2.imshow("image", gray_image)
-cv2.waitKey(0)
-cv2.destroyAllWindows()
+    gray_image = cv2.resize(gray_image, (0,0), fx=5, fy=5)
+
+    cv2.imshow("image", gray_image)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
