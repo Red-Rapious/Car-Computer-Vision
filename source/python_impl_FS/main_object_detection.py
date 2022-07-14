@@ -8,7 +8,6 @@
 import numpy as np
 import pickle
 
-from sympy import I
 from ViolaJones import ViolaJones
 from CascadeClassifier import CascadeClassifier
 import time

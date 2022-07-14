@@ -5,7 +5,7 @@ class VehicleDetector:
 
     def __init__(self):
         # Load Network
-        net = cv2.dnn.readNet("/Users/antoinegroudiev/Documents/Travail/TIPE/Car-Computer-Vision/source/opencv_impl/yolo/dnn_model/yolov4.weights", "/Users/antoinegroudiev/Documents/Travail/TIPE/Car-Computer-Vision/source/opencv_impl/yolo/dnn_model/yolov4.cfg")
+        net = cv2.dnn.readNet("/Users/antoinegroudiev/Documents/Code/Car-Computer-Vision/source/opencv_impl/yolo/dnn_model/vehicle_yolov4.weights", "/Users/antoinegroudiev/Documents/Code/Car-Computer-Vision/source/opencv_impl/yolo/dnn_model/vehicle_yolov4.cfg")
         self.model = cv2.dnn_DetectionModel(net)
         self.model.setInputParams(size=(832, 832), scale=1 / 255)
 
