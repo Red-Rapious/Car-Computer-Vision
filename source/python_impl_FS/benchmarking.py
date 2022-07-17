@@ -16,23 +16,20 @@ def features_count_graph(start: int, stop: int, step: int, ratio: float=16/9, sh
     side = [i for i in range(start, stop, step)]
     nb_features = [len(vj.build_features((s, int(s/ratio)))) for s in side]
 
-    fig = plt.figure(" ")
+    plt.figure(" ")
     plt.scatter(side, nb_features)
-    plt.scatter([special_point], [len(vj.build_features((special_point, int(special_point/ratio))))], c="red")
+    if show_special_point:
+        plt.scatter([special_point], [len(vj.build_features((special_point, int(special_point/ratio))))], c="red")
     plt.xlabel("Côté de l'image (px)")
     plt.ylabel("Nombre de features")
     plt.title("Nombre de features possibles en fonction de la taille de l'image")
     plt.show()
-
-#features_count_graph(10, 30, 2)
 
 def fill_rectangle(image, angle1: tuple, angle2: tuple, is_positive: bool) -> None:
     col = (255, 255, 255) if is_positive else (0, 0, 0)
     for x in range(angle1[0], angle2[0] + 1):
         for y in range(angle1[1], angle2[1] + 1):
             image[y][x] = col
-
-    #cv2.rectangle(image, angle1, angle2, col, 2)
 
 
 def draw_weakclassifier_on_image(image: list, weak_classifier: WeakClassifier) -> None:
