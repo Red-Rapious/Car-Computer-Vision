@@ -1,3 +1,4 @@
+from turtle import color
 import matplotlib.pyplot as plt
 import numpy as np
 from ViolaJones import ViolaJones
@@ -6,7 +7,7 @@ from RectangleRegion import RectangleRegion
 import cv2
 from time import sleep
 
-def features_count_graph(start: int, stop: int, step: int, ratio: float=16/9) -> None:
+def features_count_graph(start: int, stop: int, step: int, ratio: float=16/9, show_special_point: bool=False, special_point: int=19) -> None:
     """ Trace le nombre de features possibles contenues
     pour des images verticales de hauteurs allant de 'start' à 'stop' 
     avec un pas de 'step' et ayant un ratio 'ratio' """
@@ -15,7 +16,9 @@ def features_count_graph(start: int, stop: int, step: int, ratio: float=16/9) ->
     side = [i for i in range(start, stop, step)]
     nb_features = [len(vj.build_features((s, int(s/ratio)))) for s in side]
 
+    fig = plt.figure(" ")
     plt.scatter(side, nb_features)
+    plt.scatter([special_point], [len(vj.build_features((special_point, int(special_point/ratio))))], c="red")
     plt.xlabel("Côté de l'image (px)")
     plt.ylabel("Nombre de features")
     plt.title("Nombre de features possibles en fonction de la taille de l'image")
@@ -56,4 +59,5 @@ def main() -> None:
         if key == 27:
             break
 
-main()
+if __name__ == "__main__":
+    features_count_graph(6, 22, 2, 1, True, 19)
