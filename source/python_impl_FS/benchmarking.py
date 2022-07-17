@@ -6,6 +6,8 @@ from WeakClassifier import WeakClassifier
 from RectangleRegion import RectangleRegion
 import cv2
 from time import sleep
+from utilitaires import integral_image, read_image
+import pandas
 
 def features_count_graph(start: int, stop: int, step: int, ratio: float=16/9, show_special_point: bool=False, special_point: int=19) -> None:
     """ Trace le nombre de features possibles contenues
@@ -40,6 +42,24 @@ def draw_weakclassifier_on_image(image: list, weak_classifier: WeakClassifier) -
     for region in weak_classifier.negative_regions:
         fill_rectangle(image, (region.x, region.y), (region.x + region.width, region.y + region.height), not is_polarity_pos)
 
+def show_image_as_table(image: list, title: str) -> None:
+    #define figure and axes
+    fig, ax = plt.subplots(num=title)
+
+    #hide the axes
+    fig.patch.set_visible(False)
+    ax.axis('off')
+    ax.axis('tight')
+
+    #create data
+    df = pandas.DataFrame(image)
+
+    #create table
+    table = ax.table(cellText=df.values, loc='center')
+
+    #display table
+    fig.tight_layout()
+    plt.show()
 
 def main() -> None:
     """ Programme de test """
@@ -57,4 +77,9 @@ def main() -> None:
             break
 
 if __name__ == "__main__":
-    features_count_graph(6, 22, 2, 1, True, 19)
+    image = np.array(read_image("ressources/faces_images/train/face/face00324.pgm"), dtype=np.uint8)
+    gray_image = cv2.cvtColor(image, cv2.COLOR_GRAY2BGR)
+
+    cv2.imshow("Image en nuances de gris", cv2.resize(image, (0, 0), fx=30, fy=30, interpolation=cv2.INTER_NEAREST))
+    show_image_as_table(image, title="Image numérique")
+    show_image_as_table(integral_image(image), title="Image intégrale")
