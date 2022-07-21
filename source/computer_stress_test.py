@@ -24,7 +24,7 @@ def stress_test(N: int, T: int, M: int, number: str):
             B = np.linalg.inv(A)
         print("     ["+str(i+1)+"/"+str(N)+"]")
 
-    print("[Info] Temps total du test :", number, round(time.time() - start, 2), "secondes")
+    print("[Info] Temps total du test", number, ":", round(time.time() - start, 2), "secondes")
     print("[Fin du test " + number + "]\n")
     return round(time.time() - start, 2)
 
