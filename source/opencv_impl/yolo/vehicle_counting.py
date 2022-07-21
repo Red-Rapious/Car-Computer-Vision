@@ -9,7 +9,7 @@ scale_percent = 50
 vd = VehicleDetector()
 
 # Load images from a folder
-images_folder = glob.glob("/Users/antoinegroudiev/Documents/Travail/TIPE/Car-Computer-Vision/source/opencv_impl/yolo/images/*.jpg")
+images_folder = glob.glob("/Users/antoinegroudiev/Documents/Code/Car-Computer-Vision/source/opencv_impl/yolo/images/*.jpg")
 
 vehicles_folder_count = 0
 
