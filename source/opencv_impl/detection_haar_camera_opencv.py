@@ -2,14 +2,14 @@ import cv2
 from utilitaires import encadrer_objet
 import time
 
-REAL_TIME_MODE = True
+REAL_TIME_MODE = False
 
 # Ouverture de la caméra
 capture = None
 if REAL_TIME_MODE:
    capture = cv2.VideoCapture(0)
 else:
-   capture = cv2.VideoCapture("ressources/videos/Parc_naturel.mp4")
+   capture = cv2.VideoCapture("ressources/videos/cars_road.mp4")
 if not capture.isOpened():
    print("Erreur : la caméra n'est pas allumée'")
    exit(0)
@@ -19,7 +19,7 @@ stop_cascade_classifier = cv2.CascadeClassifier("ressources/classificateurs/Stop
 visages_cascade_classifier = cv2.CascadeClassifier("ressources/classificateurs/Visage_classificateur.xml")
 # Le fichier HAAR récupéré sur internet pour la détection de piétons semble être de mauvaise qualité
 #pietons_cascade_classifier = cv2.CascadeClassifier("ressources/classificateurs/Pieton_classificateur.xml")
-voitures_cascade_classifier = cv2.CascadeClassifier("ressources/classificateurs/Voitures_classificateur.xml")
+voitures_cascade_classifier = cv2.CascadeClassifier("ressources/classificateurs/Voitures2_classificateur.xml")
 feux_cascade_classifier = cv2.CascadeClassifier("ressources/classificateurs/Feu_classificateur.xml")
 
 frame_precendente = time.time()
@@ -35,7 +35,7 @@ while True:
    panneaux_stop = stop_cascade_classifier.detectMultiScale(gray_img, 1.3, 5)
    visages = visages_cascade_classifier.detectMultiScale(gray_img, 1.3, 5)
    #pietons = pietons_cascade_classifier.detectMultiScale(gray_img, 1.3, 45)
-   voitures = voitures_cascade_classifier.detectMultiScale(gray_img, 1.3, 4)
+   voitures = voitures_cascade_classifier.detectMultiScale(gray_img, 1.05, 3)
    feux = feux_cascade_classifier.detectMultiScale(gray_img, 1.3, 4)
 
    # Pour chaque panneau stop, on dessine un rectangle sur l'image et on ajoute du texte
