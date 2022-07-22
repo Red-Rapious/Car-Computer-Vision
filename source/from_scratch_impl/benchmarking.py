@@ -1,12 +1,10 @@
-from turtle import color
 import matplotlib.pyplot as plt
 import numpy as np
 from ViolaJones import ViolaJones
 from WeakClassifier import WeakClassifier
 from RectangleRegion import RectangleRegion
-import cv2
-from time import sleep
 from utilitaires import integral_image, read_image
+import cv2
 import pandas
 
 def features_count_graph(start: int, stop: int, step: int, ratio: float=16/9, show_special_point: bool=False, special_point: int=19) -> None:
