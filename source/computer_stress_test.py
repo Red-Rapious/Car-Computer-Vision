@@ -29,16 +29,17 @@ def stress_test(N: int, T: int, M: int, number: str):
     return round(time.time() - start, 2)
 
 def total_score():
-    score = 0
-    score += stress_test(10, 500, 1000, "1")
-    score += stress_test(8, 1000, 1000, "2")
-    score += stress_test(6, 2000, 1000, "3")
-    score += stress_test(4, 3000, 1000, "4")
-    score += stress_test(2, 4000, 1000, "5")
-    return score
+    detailed_scores = []
+    detailed_scores.append(stress_test(10, 500, 1000, "1"))
+    detailed_scores.append(stress_test(8, 1000, 1000, "2"))
+    detailed_scores.append(stress_test(6, 2000, 1000, "3"))
+    detailed_scores.append(stress_test(4, 3000, 1000, "4"))
+    detailed_scores.append(stress_test(2, 4000, 1000, "5"))
+    return detailed_scores
 
 if __name__ == "__main__":
     print("[DEBUT DU PROGRAMME")
-    score_total = total_score()
-    print("[INFO] Score total :", score_total)
+    scores = total_score()
+    print("[INFO] Scores détaillés :", scores)
+    print("[INFO] Score total :", sum(scores))
     print("[FIN DU PROGRAMME]")
