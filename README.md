@@ -10,6 +10,9 @@ Dans un second temps, j'essayerai de développer et d'implémenter mon propre al
 - Implémentation simple avec OpenCV de détection de panneaux, voitures, et visages, utilisant l'algorithme de **Viola-Jones** : `source/opencv_impl/viola_jones`
 - Implémentation avec OpenCV de la même détection avec **YOLO** : `source/opencv_impl/yolo`
 - Implémentation de zéro de l'algorithme de Viola-Jones pour de la reconnaissance faciale : `source/from_scratch_impl`
+- Scripts simplifiés pour le diaporama : `source/scripts_simplifies`
+- Divers scripts de comparaison des performances de processeurs : `source/stress_test`
+- Scipts pour transformer des images diverses en images formatées pour l'apprentissage : `source/training_data_processing`
 
 ## License
 Ceci est un projet original d'Antoine Groudiev, sous licence [CC-BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/).
