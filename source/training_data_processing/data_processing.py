@@ -43,5 +43,7 @@ def process_entire_folder():
 
 if __name__ == "__main__":
     print("[DEBUT DU PROGRAMME]")
+    os.mkdir(PROCESSED_FOLDER + "train")
+    os.mkdir(PROCESSED_FOLDER + "test")
     process_entire_folder()
     print("[FIN DU PROGRAMME]")
