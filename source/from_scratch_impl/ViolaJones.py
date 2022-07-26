@@ -4,6 +4,7 @@ import copy
 from RectangleRegion import RectangleRegion
 from WeakClassifier import WeakClassifier
 from utilitaires import evaluation, integral_image
+import time
 
 from sklearn.feature_selection import SelectPercentile, f_classif
 
@@ -59,6 +60,7 @@ class ViolaJones:
         features = features[indices]
         print(str(len(features)) + " features conservées.")
 
+        print("Mise à jour des poids...")
         for t in range(self.feature_number):
             weak_classifiers = self.train_weak_classifiers(X, y, features, weights)
             clf, error, accuracy = self.select_best_classifier(weak_classifiers, weights, training_data)
@@ -132,9 +134,12 @@ class ViolaJones:
         y = np.array(map(lambda data: data[1], training_data)) # tableau de booléens
 
         i = 0
+        last_time = time.time()
         for pos, neg in features:
-            if i%1000 == 0:
-                print(str(i) + "/" + str(len(features)), end="\t")
+            # Message de progression
+            if i%1000 == 0 and i != 0:
+                print("     [INFO] Avancée :", str(i) + "/" + str(len(features)), "     Temps pour 1000 features : " + str(round(time.time() - last_time, 2)) + "s    Temps restant estimé : " + str(round((time.time() - last_time) * (len(features) - i) / 1000, 0)) + "s")
+                last_time = time.time()
             X[i] = [evaluation(training_data[j][0], pos, neg) for j in range(len(training_data))]
             i += 1
         print("\n")

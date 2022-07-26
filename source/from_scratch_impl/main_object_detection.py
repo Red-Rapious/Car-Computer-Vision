@@ -15,7 +15,7 @@ import time
 T = 1
 
 SAVE_FOLDER = "saves/"
-IMAGES_FOLDER = "././ressources/faces_images/"
+IMAGES_FOLDER = "././ressources/training_images/faces_images/"
 PICKLE_IMAGES = IMAGES_FOLDER + "pickle_files/"
 
 def train_viola(t):
