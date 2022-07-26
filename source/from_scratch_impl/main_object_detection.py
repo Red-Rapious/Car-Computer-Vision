@@ -12,9 +12,13 @@ from ViolaJones import ViolaJones
 from CascadeClassifier import CascadeClassifier
 import time
 
-T = 1
+# HYPERPARAMÈTRES
+T = 5 # nombre de classificateurs faibles
 
-SAVE_FOLDER = "saves/"
+# DEBUG
+IMG_NUMBER = -1
+
+SAVE_FOLDER = "/Users/antoinegroudiev/Documents/Code/Car-Computer-Vision/source/from_scratch_impl/saves/"
 IMAGES_FOLDER = "././ressources/training_images/faces_images/"
 PICKLE_IMAGES = IMAGES_FOLDER + "pickle_files/"
 
@@ -22,9 +26,9 @@ def train_viola(t):
     with open(PICKLE_IMAGES + "training.pkl", 'rb') as f:
         training = pickle.load(f)
     clf = ViolaJones(feature_number=t)
-    clf.train(training, training_len=2429, test_len=4548)
+    clf.train(training[:IMG_NUMBER], training_len=2429, test_len=4548)
     evaluate(clf, training)
-    clf.save(str(t))
+    clf.save(SAVE_FOLDER + "face" + str(t))
 
 def test_viola(filename):
     with open(PICKLE_IMAGES + "test.pkl", 'rb') as f:
@@ -72,20 +76,22 @@ def evaluate(clf, data):
         
         correct += 1 if prediction == y else 0
     
-    print("[RESULTATS]")
-    print("Pourcentage de Faux Positifs : %d/%d (%f)" % (false_positives, all_negatives, false_positives/all_negatives))
-    print("Pourcentage de Faux Négatifs : %d/%d (%f)" % (false_negatives, all_positives, false_negatives/all_positives))
-    print("Précision : %d/%d (%f)" % (correct, len(data), correct/len(data)))
-    print("Temps moyen de classification : %f" % (classification_time / len(data)))
+    print("\n\n[RESULTATS]")
+    print(" Pourcentage de Faux Positifs : %d/%d (%f)" % (false_positives, all_negatives, false_positives/all_negatives))
+    print(" Pourcentage de Faux Négatifs : %d/%d (%f)" % (false_negatives, all_positives, false_negatives/all_positives))
+    print(" Précision : %d/%d (%f)" % (correct, len(data), correct/len(data)))
+    print(" Temps moyen de classification : %fs" % (classification_time / len(data)))
 
 if __name__ == "__main__":
-    print("[DEBUT DU PROGRAMME]")
-    print("Paramètres : T = %d (nombre de classificateurs faibles)" % T)
-    print("[Entraînement du modèle] ...")
+    print("[DEBUT DU PROGRAMME]\n")
+    print("[Paramètres] : ")
+    print("     T = %d (nombre de classificateurs faibles)" % T)
+    print("     [DEBUG] Le paramètre 'IMG_NUMBER' est activé - toute la base d'images ne sera pas utilisée. \n         Définir IMG_NUMBER = -1 pour utiliser toute la base d'images.\n     IMG_NUMBER = ", IMG_NUMBER) if IMG_NUMBER != -1 else None
+    print("\n[Entraînement du modèle] ...")
     temps_depart = time.time()
-    train_viola(1)
-    print("Temps d'entraînement total : %f" % (time.time() - temps_depart))
-    print("[Test du modèle]")
-    test_viola(SAVE_FOLDER + str(T) + ".pkl")
+    train_viola(T)
+    print(" Temps d'entraînement total : %f min" % (round(((time.time() - temps_depart)/60), 0)))
+    print("\n[Test du modèle]")
+    test_viola(SAVE_FOLDER + "face" + str(T))
 
-    print("[FIN DU PROGRAMME]")
+    print("\n[FIN DU PROGRAMME]")

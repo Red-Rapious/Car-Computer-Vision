@@ -9,4 +9,4 @@ class WeakClassifier:
         self.polarity = polarity
 
     def classify(self, ii: list):
-        return 1 if self.polarity * evaluation(ii) < self.polarity * self.treshold else 0
+        return 1 if self.polarity * evaluation(ii, self.positive_regions, self.negative_regions) < self.polarity * self.treshold else 0

@@ -1,4 +1,4 @@
-from copyreg import pickle
+import pickle
 import numpy as np
 import copy
 from RectangleRegion import RectangleRegion
@@ -54,7 +54,7 @@ class ViolaJones:
         X, y = self.apply_features(features, training_data)
         
         # Utilisation du module SciKit-Learn pour choisir les features les plus importantes
-        print("Sélection des features (SciKit)...")
+        print("Sélection des meilleures features (SciKit)...")
         indices = SelectPercentile(f_classif, percentile=percentile).fit(X.T, y).get_support(indices=True)
         X = X[indices]
         features = features[indices]
@@ -125,22 +125,24 @@ class ViolaJones:
 
                         y += 1
                     x += 1
-        return features
+        return np.array(features, dtype=object)
 
     def apply_features(self, features: list, training_data: list) -> tuple:
         """ Evalue chaque feature sur chaque exemple d'entraînement """
 
         X = np.zeros((len(features), len(training_data)))
-        y = np.array(map(lambda data: data[1], training_data)) # tableau de booléens
+        y = list(map(lambda data: data[1], training_data)) # tableau de booléens
 
         i = 0
         last_time = time.time()
         for pos, neg in features:
             # Message de progression
             if i%1000 == 0 and i != 0:
-                print("     [INFO] Avancée :", str(i) + "/" + str(len(features)), "     Temps pour 1000 features : " + str(round(time.time() - last_time, 2)) + "s    Temps restant estimé : " + str(round((time.time() - last_time) * (len(features) - i) / 1000, 0)) + "s")
+                print("     [INFO] Avancée :", str(i) + "/" + str(len(features)), "     Temps pour 1000 features : " + str(round(time.time() - last_time, 2)) + "s    Temps restant estimé : " + str(round((time.time() - last_time) * (len(features) - i) / 1000 / 60, 0)) + "min")
                 last_time = time.time()
+            
             X[i] = [evaluation(training_data[j][0], pos, neg) for j in range(len(training_data))]
+            #X[i] = list(map(lambda data: evaluation(data[0], pos, neg), training_data))
             i += 1
         print("\n")
 
@@ -164,7 +166,7 @@ class ViolaJones:
         
         classifiers = []
         total_features = len(X)
-        for feature in X:
+        for index, feature in enumerate(X):
             # Affichage de la progression du classement, qui peut être long
             if len(classifiers) % 1000 == 0 and len(classifiers) != 0:
                 percentage = str(int(100 * len(classifiers) / total_features))
@@ -183,9 +185,10 @@ class ViolaJones:
                 # Mise à jour des élements avec erreur minimale
                 if error < min_error:
                     min_error = error
-                    best_weight = w
-                    best_feature = f
+                    best_feature = features[index]
+                    best_treshold = f
                     best_polarity = 1 if pos_seen > neg_seen else -1
+
                 if is_positive:
                     pos_seen += 1
                     pos_weights += w
@@ -226,13 +229,13 @@ class ViolaJones:
         
         return total >= 0.5 * sum(self.alphas)
 
-    def save(self, filename=str) -> None:
+    def save(self, filename:str) -> None:
         """ Utilise le module Pickle pour sauvegarder le modèle entraîné"""
         with open(filename + ".pkl", "wb") as f:
             pickle.dump(self, f)
 
     @staticmethod
-    def load(self, filename=str):
+    def load(filename:str):
         """ Utilise le module Pickle pour charger un modèle enregistré """
-        with open(filename + ".pkl", 'r') as f:
+        with open(filename + ".pkl", 'rb') as f:
             return pickle.load(f)
