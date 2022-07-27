@@ -1,6 +1,7 @@
 from numpy import negative
 from ViolaJones import ViolaJones
 import pickle
+import os
 
 class CascadeClassifier:
     def __init__(self, layers:list):
@@ -48,8 +49,13 @@ class CascadeClassifier:
 
     def save(self, filename:str) -> None:
         """ Utilise le module Pickle pour sauvegarder le modèle entraîné"""
-        with open(filename + ".pkl", "wb") as f:
+        os.mkdir(filename)
+
+        with open(filename + "/cascade.pkl", "wb") as f:
             pickle.dump(self, f)
+        
+        for i, clf in enumerate(self.classifiers):
+            clf.save(filename + "/sub_face" + str(self.layers[i]))
 
     @staticmethod
     def load(filename:str):

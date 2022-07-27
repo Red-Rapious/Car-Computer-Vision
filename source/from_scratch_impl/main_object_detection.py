@@ -55,7 +55,6 @@ def train_viola(t):
 
 def test_viola(filename):
     test = load_test_data()
-    
     clf = ViolaJones.load(filename)
     evaluate(clf, test)
 
