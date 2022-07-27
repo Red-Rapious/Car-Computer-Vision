@@ -46,13 +46,13 @@ class CascadeClassifier:
                 return False
         return True
 
-    def save(self, filename=str) -> None:
+    def save(self, filename:str) -> None:
         """ Utilise le module Pickle pour sauvegarder le modèle entraîné"""
         with open(filename + ".pkl", "wb") as f:
             pickle.dump(self, f)
 
     @staticmethod
-    def load(self, filename=str):
+    def load(filename:str):
         """ Utilise le module Pickle pour charger un modèle enregistré """
-        with open(filename + ".pkl", 'r') as f:
+        with open(filename + ".pkl", 'rb') as f:
             return pickle.load(f)

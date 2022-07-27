@@ -11,6 +11,7 @@ import pickle
 from ViolaJones import ViolaJones
 from CascadeClassifier import CascadeClassifier
 import time
+from random import shuffle
 
 from utilitaires import AccuracyMethod, measure_accuracy
 
@@ -18,20 +19,32 @@ from utilitaires import AccuracyMethod, measure_accuracy
 T = 5 # nombre de classificateurs faibles
 
 # DEBUG
-IMG_NUMBER = 3
+IMG_NUMBER = -1
+SUFFLE = False
+
 TRAIN_MODEL = False
-TEST_MODEL = True
+TEST_MODEL = False
+TRAIN_CASCADE = True
+TEST_CASCADE = True
 
 SAVE_FOLDER = "/Users/antoinegroudiev/Documents/Code/Car-Computer-Vision/source/from_scratch_impl/saves/"
 IMAGES_FOLDER = "././ressources/training_images/faces_images/"
 PICKLE_IMAGES = IMAGES_FOLDER + "pickle_files/"
 OBJECT = "face"
 
-def train_viola(t):
+def load_training_data():
     with open(PICKLE_IMAGES + "training.pkl", 'rb') as f:
         training = pickle.load(f)
+    if SUFFLE:
+        shuffle(training)
+    if IMG_NUMBER != -1:
+        training = training[:IMG_NUMBER]
+    return training
+
+def train_viola(t):
+    training = load_training_data()
     clf = ViolaJones(feature_number=t)
-    clf.train(training[:IMG_NUMBER], training_len=2429, test_len=4548)
+    clf.train(training, training_len=2429, test_len=4548)
     evaluate(clf, training)
     clf.save(SAVE_FOLDER + OBJECT + str(t))
 
@@ -43,19 +56,18 @@ def test_viola(filename):
     evaluate(clf, test)
 
 def train_cascade(layers, filename="Cascade"):
-    with open(PICKLE_IMAGES + "training.pkl", 'rb') as f:
-        training = pickle.load(f)
+    training = load_training_data()
     
     clf = CascadeClassifier(layers)
     clf.train(training)
     evaluate(clf, training)
-    clf.save(filename)
+    clf.save(SAVE_FOLDER + OBJECT + "_" + filename)
 
 def test_cascade(filename="Cascade"):
     with open(PICKLE_IMAGES + "test.pkl", "rb") as f:
         test = pickle.load(f)
     
-    clf = CascadeClassifier.load(SAVE_FOLDER + filename)
+    clf = CascadeClassifier.load(SAVE_FOLDER + OBJECT + "_" + filename)
     evaluate(clf, test)
 
 def evaluate(clf, data):
@@ -91,16 +103,17 @@ def evaluate(clf, data):
     standard = measure_accuracy(true_positives, true_negatives, false_positives, false_negatives, AccuracyMethod.STANDARD)
     fscore = measure_accuracy(true_positives, true_negatives, false_positives, false_negatives, AccuracyMethod.FSCORE)
 
-    #print(" Accuracy : %f" % accuracy)
     print("'Précision' (accuracy) :")
-    print("     Méthode Standard : %d/%d (%f)", (correct, len(data), correct/len(data)))
+    print("     Méthode Standard : %d/%d (%f)" % (correct, len(data), correct/len(data)))
     print("     F-Score : ", fscore)
     print(" Temps moyen de classification : %fs" % (classification_time / len(data)))
 
 if __name__ == "__main__":
     print("\n\n     --- [DEBUT DU PROGRAMME] ---\n")
-    print("[Paramètres] : ")
-    print("     T = %d (nombre de classificateurs faibles)" % T)
+
+    if TRAIN_MODEL or TEST_MODEL:
+        print("[Paramètres] : ")
+        print("     T = %d (nombre de classificateurs faibles)" % T)
 
     if TRAIN_MODEL:
         print("     [DEBUG] Le paramètre 'IMG_NUMBER' est activé - toute la base d'images ne sera pas utilisée. \n         Définir IMG_NUMBER = -1 pour utiliser toute la base d'images.\n     IMG_NUMBER = ", IMG_NUMBER) if IMG_NUMBER != -1 else None
@@ -111,5 +124,10 @@ if __name__ == "__main__":
     if TEST_MODEL:
         print("\n[Test du modèle]")
         test_viola(SAVE_FOLDER + OBJECT + str(T))
+
+    if TRAIN_CASCADE:
+        train_cascade([1, 5, 10, 50], "cascade_1_5_10_50")
+    if TEST_CASCADE:
+        test_cascade("cascade_1_5_10_50")
 
     print("\n       --- [FIN DU PROGRAMME] ---\n\n")
