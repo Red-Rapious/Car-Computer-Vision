@@ -41,6 +41,11 @@ def load_training_data():
         training = training[:IMG_NUMBER]
     return training
 
+def load_test_data():
+    with open(PICKLE_IMAGES + "test.pkl", 'rb') as f:
+        test = pickle.load(f)
+    return test
+
 def train_viola(t):
     training = load_training_data()
     clf = ViolaJones(feature_number=t)
@@ -49,8 +54,7 @@ def train_viola(t):
     clf.save(SAVE_FOLDER + OBJECT + str(t))
 
 def test_viola(filename):
-    with open(PICKLE_IMAGES + "test.pkl", 'rb') as f:
-        test = pickle.load(f)
+    test = load_test_data()
     
     clf = ViolaJones.load(filename)
     evaluate(clf, test)
@@ -64,9 +68,7 @@ def train_cascade(layers, filename="Cascade"):
     clf.save(SAVE_FOLDER + OBJECT + "_" + filename)
 
 def test_cascade(filename="Cascade"):
-    with open(PICKLE_IMAGES + "test.pkl", "rb") as f:
-        test = pickle.load(f)
-    
+    test = load_test_data()
     clf = CascadeClassifier.load(SAVE_FOLDER + OBJECT + "_" + filename)
     evaluate(clf, test)
 
@@ -104,8 +106,8 @@ def evaluate(clf, data):
     fscore = measure_accuracy(true_positives, true_negatives, false_positives, false_negatives, AccuracyMethod.FSCORE)
 
     print("'Précision' (accuracy) :")
-    print("     Méthode Standard : %d/%d (%f)" % (correct, len(data), correct/len(data)))
-    print("     F-Score : ", fscore)
+    print("     Méthode Standard : %d/%d (%f)" % (correct, len(data), round(standard, 2)))
+    print("     F-Score : ", round(fscore, 2))
     print(" Temps moyen de classification : %fs" % (classification_time / len(data)))
 
 if __name__ == "__main__":

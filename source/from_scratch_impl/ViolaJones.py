@@ -22,9 +22,6 @@ class ViolaJones:
             is_positive_example : 'True' si l'image contient l'objet cherché (bool)
         percentile: pourcentage du nombre de features à garder avec SciKit-Learn
         """
-        
-        #print("Copie des données d'entraînement...")
-        #training_data = copy.deepcopy(training)
 
         # Comptage du nombres d'exemples positifs et négatifs
         print("Comptage des exemples...")
@@ -92,8 +89,6 @@ class ViolaJones:
         for w in range(1, width+1):
             for h in range(1, height+1):
                 # Pour toutes les dimensions possibles de rectangles
-                #for x in range(width-w):
-                #    for y in range(height-h):
                 x = 0
                 while x + w < width:
                     y = 0
@@ -145,7 +140,6 @@ class ViolaJones:
                 last_time = time.time()
             
             X[i] = [evaluation(training_data[j][0], pos, neg) for j in range(len(training_data))]
-            #X[i] = list(map(lambda data: evaluation(data[0], pos, neg), training_data))
             i += 1
         print("\n")
 
