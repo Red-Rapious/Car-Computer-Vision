@@ -23,26 +23,27 @@ class ViolaJones:
         percentile: pourcentage du nombre de features à garder avec SciKit-Learn
         """
         
-        print("Copie des données d'entraînement...")
-        training_data = copy.deepcopy(training)
+        #print("Copie des données d'entraînement...")
+        #training_data = copy.deepcopy(training)
 
         # Comptage du nombres d'exemples positifs et négatifs
         print("Comptage des exemples...")
         pos_count = 0
         neg_count = 0
-        for (ii, is_positive_example) in training_data:
+        for (ii, is_positive_example) in training:
             if is_positive_example:
                 pos_count += 1
             else:
                 neg_count += 1
         
         # Calcul des poids
-        print("Calcul des poids...")
+        print("Initialisation des poids et transformation des images en images intégrales...")
         #weights = np.array([1.0 / (2 * (pos_count if training_data[i][1] else neg_count)) for i in range(len(training_data))])
-        weights = np.zeros(len(training_data))
-        for i in range(len(training_data)):
-            (ii, is_positive_example) = training_data[i]
-            if is_positive_example:
+        training_data = []
+        weights = np.zeros(len(training))
+        for i in range(len(training)):
+            training_data.append((integral_image(training[i][0]), training[i][1]))
+            if training[i][1]:
                 weights[i] = 1.0 / (2 * pos_count)
             else:
                 weights[i] = 1.0 / (2 * neg_count)
@@ -71,6 +72,8 @@ class ViolaJones:
             alpha = -np.log(beta)
             self.alphas.append(alpha)
             self.classifiers.append(clf)
+
+        print("Phase d'entraînement terminée.")
         
 
 

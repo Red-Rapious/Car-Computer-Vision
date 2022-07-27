@@ -1,11 +1,19 @@
-READING_MODE = "CUSTOM" #TODO: changer pour une enum
-
-
 import numpy as np # utilisation de numpy pour accéler les calculs
 import RectangleRegion
 import os
 import cv2
 from random import randrange
+import enum
+
+class ReadingMode (enum.Enum):
+    CV2 = 0
+    CUSTOM = 1
+
+class AccuracyMethod (enum.Enum):
+    STANDARD = 0
+    FSCORE = 1
+
+READING_MODE = ReadingMode.CUSTOM
 
 def integral_image(image: list) -> list: # int array array -> int array array
     """ Convertit une image en son image intégrale """
@@ -78,8 +86,16 @@ def load_images(positive_folder: str, negative_folder: str, extention:str=".pgm"
 
     return training_data
 
+def measure_accuracy(true_positives:int, true_negatives: int, false_positives: int, false_negatives: int, method:AccuracyMethod = AccuracyMethod.STANDARD): # TODO: changer pour une enum
+    if method == AccuracyMethod.STANDARD:
+        return (true_positives + true_negatives) / (true_positives + true_negatives + false_negatives + false_positives)
+    if method == AccuracyMethod.FSCORE:
+        precision = true_positives / (true_positives + false_positives)
+        recall = true_positives / (true_positives + false_negatives)
 
-if __name__ == "__main__":
+        return 2 / (1/precision + 1/recall)
+
+'''if __name__ == "__main__":
     images = load_images("ressources/training_data/train/face", "ressources/training_data/train/non-face")
     gray_image = cv2.cvtColor(np.array(images[randrange(len(images))][0]).astype('uint8'), cv2.COLOR_GRAY2BGR)
 
@@ -87,4 +103,4 @@ if __name__ == "__main__":
 
     cv2.imshow("image", gray_image)
     cv2.waitKey(0)
-    cv2.destroyAllWindows()
+    cv2.destroyAllWindows()'''
