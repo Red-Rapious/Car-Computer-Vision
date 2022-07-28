@@ -135,4 +135,4 @@ if __name__ == "__main__":
     if TEST_CASCADE:
         test_cascade("cascade_1_5_10_50")
 
-    print("\n       --- [FIN DU PROGRAMME] ---\n\n")
+    print("\n       --- [FIN DU PROGRAMME] ---\n")
