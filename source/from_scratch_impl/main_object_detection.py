@@ -7,16 +7,15 @@
 
 import numpy as np
 import pickle
-
-from ViolaJones import ViolaJones
-from CascadeClassifier import CascadeClassifier
 import time
 from random import shuffle
 
+from ViolaJones import ViolaJones
+from CascadeClassifier import CascadeClassifier
 from utilitaires import AccuracyMethod, measure_accuracy
 
 # HYPERPARAMÈTRES
-T = 5 # nombre de classificateurs faibles
+T = 5 # nombre de classificateurs faibles en cas de modèle seul
 
 # DEBUG
 IMG_NUMBER = -1
@@ -24,7 +23,7 @@ SUFFLE = False
 
 TRAIN_MODEL = False
 TEST_MODEL = False
-TRAIN_CASCADE = True
+TRAIN_CASCADE = False
 TEST_CASCADE = True
 
 SAVE_FOLDER = "/Users/antoinegroudiev/Documents/Code/Car-Computer-Vision/source/from_scratch_impl/saves/"

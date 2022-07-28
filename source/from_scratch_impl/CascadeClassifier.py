@@ -60,5 +60,5 @@ class CascadeClassifier:
     @staticmethod
     def load(filename:str):
         """ Utilise le module Pickle pour charger un modèle enregistré """
-        with open(filename + ".pkl", 'rb') as f:
+        with open(filename + "/cascade.pkl", 'rb') as f:
             return pickle.load(f)
