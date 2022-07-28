@@ -89,10 +89,10 @@ def load_images(positive_folder: str, negative_folder: str, extention:str=".pgm"
 
     # Ajout de chaque image sous forme d'un tableau de nombres
     for path in positive_images_paths:
-        training_data.append((read_image(path), True))
+        training_data.append((np.array(read_image(path)), True))
 
     for path in negative_images_paths:
-        training_data.append((read_image(path), False))
+        training_data.append((np.array(read_image(path)), False))
 
     print("[INFO] Chargement des images terminé")
     print("     {} images positives".format(pos_count))
@@ -117,8 +117,8 @@ def measure_accuracy(true_positives:int, true_negatives: int, false_positives: i
 
 if __name__ == "__main__":
     print("     [DEBUT DU PROGRAMME]")
-    name = "/Users/antoinegroudiev/Documents/Code/Car-Computer-Vision/ressources/training_images/stop_signs/stop_signs_images_processed/pickle_files/train"
-    positive_folder = "/Users/antoinegroudiev/Documents/Code/Car-Computer-Vision/ressources/training_images/stop_signs/stop_signs_images_processed/train"
-    negative_folder = "/Users/antoinegroudiev/Documents/Code/Car-Computer-Vision/ressources/training_images/faces_images/train/non-face"
-    images_to_pickle(name, positive_folder, negative_folder, ".pgm", max_negatives=120*2)
+    name = "/Users/antoinegroudiev/Documents/Code/Car-Computer-Vision/ressources/training_images/stop_sign_images/pickle_files/test"
+    positive_folder = "/Users/antoinegroudiev/Documents/Code/Car-Computer-Vision/ressources/training_images/stop_sign_images/stop_signs_images_processed/test"
+    negative_folder = "/Users/antoinegroudiev/Documents/Code/Car-Computer-Vision/ressources/training_images/face_images/test/non-face"
+    images_to_pickle(name, positive_folder, negative_folder, ".pgm", max_negatives=56*50)
     print("     [FIN DU PROGRAMME]")

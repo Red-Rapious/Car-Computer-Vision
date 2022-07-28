@@ -30,10 +30,8 @@ TEST_CASCADE = True
 
 
 SAVE_FOLDER = "/Users/antoinegroudiev/Documents/Code/Car-Computer-Vision/source/from_scratch_impl/saves/"
-#IMAGES_FOLDER = "././ressources/training_images/faces_images/"
 IMAGES_FOLDER = "././ressources/training_images/" + OBJECT + "_images/"
 PICKLE_IMAGES = IMAGES_FOLDER + "pickle_files/"
-#OBJECT = "face"
 
 def load_training_data():
     with open(PICKLE_IMAGES + "train.pkl", 'rb') as f:
