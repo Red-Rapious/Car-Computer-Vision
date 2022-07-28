@@ -1,3 +1,7 @@
+'''
+    Fichier comprenant des fonctions directement utiles aux différents fichiers de l'algorithme.
+'''
+
 import numpy as np # utilisation de numpy pour accéler les calculs
 import RectangleRegion
 import os
@@ -39,9 +43,9 @@ def evaluation(ii: list, positive_region: RectangleRegion, negative_region: Rect
 def read_image(path: str) -> list: # str -> int array array
     """ Lit une image à partir d'un chemin de fichier.
     Le mode de lecture dépend de la constante READING_MODE définie plus haut """
-    if READING_MODE == "CV2":
+    if READING_MODE == ReadingMode.CV2:
         return cv2.imread(path, -1)
-    elif READING_MODE == "CUSTOM":
+    elif READING_MODE == ReadingMode.CUSTOM:
         with open(path, 'rb') as file:
             assert file.readline() == b"P5\n"
             (width, height) = [int(i) for i in file.readline().split()]
@@ -94,13 +98,3 @@ def measure_accuracy(true_positives:int, true_negatives: int, false_positives: i
         recall = true_positives / (true_positives + false_negatives)
 
         return 2 / (1/precision + 1/recall)
-
-'''if __name__ == "__main__":
-    images = load_images("ressources/training_data/train/face", "ressources/training_data/train/non-face")
-    gray_image = cv2.cvtColor(np.array(images[randrange(len(images))][0]).astype('uint8'), cv2.COLOR_GRAY2BGR)
-
-    gray_image = cv2.resize(gray_image, (0,0), fx=5, fy=5)
-
-    cv2.imshow("image", gray_image)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()'''

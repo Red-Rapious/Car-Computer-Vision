@@ -24,7 +24,7 @@ SUFFLE = False
 TRAIN_MODEL = False
 TEST_MODEL = False
 TRAIN_CASCADE = False
-TEST_CASCADE = True
+TEST_CASCADE = False
 
 SAVE_FOLDER = "/Users/antoinegroudiev/Documents/Code/Car-Computer-Vision/source/from_scratch_impl/saves/"
 IMAGES_FOLDER = "././ressources/training_images/faces_images/"
@@ -98,15 +98,18 @@ def evaluate(clf, data):
         correct += 1 if prediction == y else 0
     
     print("\n[RESULTATS]")
-    print(" Pourcentage de Faux Positifs : %d/%d (%f)" % (false_positives, tot_negatives, false_positives/tot_negatives))
-    print(" Pourcentage de Faux Négatifs : %d/%d (%f)" % (false_negatives, tot_positives, false_negatives/tot_positives))
+    print("Classification :")
+    print("     Vrais Positifs : %d/%d (%f)" % (true_positives, tot_positives, true_positives/tot_positives))
+    print("     Vrais Négatifs : %d/%d (%f)" % (true_negatives, tot_negatives, true_negatives/tot_negatives))
+    print("     Faux Positifs  : %d/%d (%f)" % (false_positives, tot_negatives, false_positives/tot_negatives))
+    print("     Faux Négatifs  : %d/%d (%f)" % (false_negatives, tot_positives, false_negatives/tot_positives))
     standard = measure_accuracy(true_positives, true_negatives, false_positives, false_negatives, AccuracyMethod.STANDARD)
     fscore = measure_accuracy(true_positives, true_negatives, false_positives, false_negatives, AccuracyMethod.FSCORE)
 
     print("'Précision' (accuracy) :")
-    print("     Méthode Standard : %d/%d (%f)" % (correct, len(data), round(standard, 2)))
-    print("     F-Score : ", round(fscore, 2))
-    print(" Temps moyen de classification : %fs" % (classification_time / len(data)))
+    print("     Méthode Standard :", str(round(standard, 2)), " (%d/%d)" % (correct, len(data)))
+    print("     F-Score          :", round(fscore, 2))
+    print(" Temps moyen de classification :", str(classification_time / len(data)) + "s")
 
 if __name__ == "__main__":
     print("\n\n     --- [DEBUT DU PROGRAMME] ---\n")

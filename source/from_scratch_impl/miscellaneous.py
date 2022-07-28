@@ -1,9 +1,16 @@
-import matplotlib.pyplot as plt
-import numpy as np
+'''
+    Fichier comprenant des fonctions annexes diverses, qui ne servent pas directement 
+    au fonctionnement de l'algorithme mais qui génèrent des images pour le diaporama.
+'''
+
+
 from ViolaJones import ViolaJones
 from WeakClassifier import WeakClassifier
 from RectangleRegion import RectangleRegion
 from utilitaires import integral_image, read_image
+
+import matplotlib.pyplot as plt
+import numpy as np
 import cv2
 import pandas
 
@@ -59,8 +66,7 @@ def show_image_as_table(image: list, title: str) -> None:
     fig.tight_layout()
     plt.show()
 
-def main() -> None:
-    """ Programme de test """
+def draw_random_classifier_on_video() -> None:
     capture = cv2.VideoCapture("ressources/videos/Parc_naturel.mp4")
     classifier = WeakClassifier([RectangleRegion(100, 100, 50, 50), RectangleRegion(150, 150, 50, 50)], [RectangleRegion(150, 100, 50, 50), RectangleRegion(100, 150, 50, 50)], 0.0, -1)
     while True:
@@ -74,10 +80,26 @@ def main() -> None:
         if key == 27:
             break
 
-if __name__ == "__main__":
-    image = np.array(read_image("ressources/faces_images/train/face/face00324.pgm"), dtype=np.uint8)
+def show_integral_image_process(filepath:str = "ressources/training_images/faces_images/train/face/face00324.pgm") -> None:
+    image = np.array(read_image(filepath), dtype=np.uint8)
     gray_image = cv2.cvtColor(image, cv2.COLOR_GRAY2BGR)
 
     cv2.imshow("Image en nuances de gris", cv2.resize(image, (0, 0), fx=30, fy=30, interpolation=cv2.INTER_NEAREST))
     show_image_as_table(image, title="Image numérique")
     show_image_as_table(integral_image(image), title="Image intégrale")
+
+def draw_main_classifiers_on_image(image: list, classifiers: list) -> None:
+    for classifier in classifiers:
+        draw_weakclassifier_on_image(image, classifier)
+
+if __name__ == "__main__":
+    clf = ViolaJones.load("/Users/antoinegroudiev/Documents/Code/Car-Computer-Vision/source/from_scratch_impl/saves/face_cascade_1_5_10_50/sub_face5")
+
+    image = cv2.cvtColor(np.array(read_image("ressources/training_images/faces_images/train/face/face00324.pgm"), dtype=np.uint8), cv2.COLOR_GRAY2BGR)
+    draw_main_classifiers_on_image(image, clf.classifiers)
+
+    image = cv2.resize(image, (0, 0), fx=15, fy=15, interpolation=cv2.INTER_NEAREST)
+
+    cv2.imshow(" ", image)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
