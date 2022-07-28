@@ -6,8 +6,8 @@ import numpy as np # utilisation de numpy pour accéler les calculs
 import RectangleRegion
 import os
 import cv2
-from random import randrange
 import enum
+import pickle
 
 class ReadingMode (enum.Enum):
     CV2 = 0
@@ -63,23 +63,29 @@ def read_image(path: str) -> list: # str -> int array array
         print("[Erreur] Mode de lecture de l'image non défini")
         exit(0)
 
-def load_images(positive_folder: str, negative_folder: str, extention:str=".pgm") -> list:
+def load_images(positive_folder: str, negative_folder: str, extention:str=".pgm", max_negatives:int=-1) -> list:
     """ Charge les images des dossiers indiqués, et les transforme en tableaux.
                 str, str, str -> (int array array, bool) array """
     training_data = []
     
     # Récupération des noms de fichiers de toutes les images de test
+    pos_count = 0
     positive_images_paths = []
     for root, dirs, files in os.walk(positive_folder):
         for file in files:
             if file.endswith(extention):
                 positive_images_paths.append(os.path.join(root,file))
+                pos_count += 1
 
+    neg_count = 0
     negative_images_paths = []
     for root, dirs, files in os.walk(negative_folder):
         for file in files:
             if file.endswith(extention):
+                if max_negatives != -1 and neg_count >= max_negatives:
+                    break
                 negative_images_paths.append(os.path.join(root,file))
+                neg_count += 1
 
     # Ajout de chaque image sous forme d'un tableau de nombres
     for path in positive_images_paths:
@@ -88,7 +94,17 @@ def load_images(positive_folder: str, negative_folder: str, extention:str=".pgm"
     for path in negative_images_paths:
         training_data.append((read_image(path), False))
 
+    print("[INFO] Chargement des images terminé")
+    print("     {} images positives".format(pos_count))
+    print("     {} images negatives".format(neg_count))
+
     return training_data
+
+def images_to_pickle(name: str, positive_folder: str, negative_folder: str, extention:str=".pgm", max_negatives:int=-1):
+    """ Sauvegarde les images des dossiers indiqués dans un fichier pickle """
+    training_data = load_images(positive_folder, negative_folder, extention, max_negatives=max_negatives)
+    with open(name + ".pkl", 'wb') as file:
+        pickle.dump(training_data, file)
 
 def measure_accuracy(true_positives:int, true_negatives: int, false_positives: int, false_negatives: int, method:AccuracyMethod = AccuracyMethod.STANDARD): # TODO: changer pour une enum
     if method == AccuracyMethod.STANDARD:
@@ -98,3 +114,11 @@ def measure_accuracy(true_positives:int, true_negatives: int, false_positives: i
         recall = true_positives / (true_positives + false_negatives)
 
         return 2 / (1/precision + 1/recall)
+
+if __name__ == "__main__":
+    print("     [DEBUT DU PROGRAMME]")
+    name = "/Users/antoinegroudiev/Documents/Code/Car-Computer-Vision/ressources/training_images/stop_signs/stop_signs_images_processed/pickle_files/train"
+    positive_folder = "/Users/antoinegroudiev/Documents/Code/Car-Computer-Vision/ressources/training_images/stop_signs/stop_signs_images_processed/train"
+    negative_folder = "/Users/antoinegroudiev/Documents/Code/Car-Computer-Vision/ressources/training_images/faces_images/train/non-face"
+    images_to_pickle(name, positive_folder, negative_folder, ".pgm", max_negatives=120*2)
+    print("     [FIN DU PROGRAMME]")
