@@ -16,6 +16,7 @@ from utilitaires import AccuracyMethod, measure_accuracy
 
 # HYPERPARAMÈTRES
 T = 5 # nombre de classificateurs faibles en cas de modèle seul
+OBJECT = "stop_sign"
 
 # DEBUG
 IMG_NUMBER = -1
@@ -23,16 +24,19 @@ SUFFLE = False
 
 TRAIN_MODEL = False
 TEST_MODEL = False
-TRAIN_CASCADE = False
-TEST_CASCADE = False
+TRAIN_CASCADE = True
+TEST_CASCADE = True
+
+
 
 SAVE_FOLDER = "/Users/antoinegroudiev/Documents/Code/Car-Computer-Vision/source/from_scratch_impl/saves/"
-IMAGES_FOLDER = "././ressources/training_images/faces_images/"
+#IMAGES_FOLDER = "././ressources/training_images/faces_images/"
+IMAGES_FOLDER = "././ressources/training_images/" + OBJECT + "_images/"
 PICKLE_IMAGES = IMAGES_FOLDER + "pickle_files/"
-OBJECT = "face"
+#OBJECT = "face"
 
 def load_training_data():
-    with open(PICKLE_IMAGES + "training.pkl", 'rb') as f:
+    with open(PICKLE_IMAGES + "train.pkl", 'rb') as f:
         training = pickle.load(f)
     if SUFFLE:
         shuffle(training)
