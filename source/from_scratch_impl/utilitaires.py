@@ -106,9 +106,11 @@ def images_to_pickle(name: str, positive_folder: str, negative_folder: str, exte
     with open(name + ".pkl", 'wb') as file:
         pickle.dump(training_data, file)
 
-def measure_accuracy(true_positives:int, true_negatives: int, false_positives: int, false_negatives: int, method:AccuracyMethod = AccuracyMethod.STANDARD): # TODO: changer pour une enum
+def measure_accuracy(true_positives:int, true_negatives: int, false_positives: int, false_negatives: int, method:AccuracyMethod = AccuracyMethod.STANDARD) -> int:
     if method == AccuracyMethod.STANDARD:
-        return (true_positives + true_negatives) / (true_positives + true_negatives + false_negatives + false_positives)
+        tot_true = true_positives + true_negatives
+        tot_data = true_positives + true_negatives + false_negatives + false_positives
+        return tot_true / tot_data
     if method == AccuracyMethod.FSCORE:
         precision = true_positives / (true_positives + false_positives)
         recall = true_positives / (true_positives + false_negatives)
