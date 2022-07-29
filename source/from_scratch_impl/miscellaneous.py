@@ -93,7 +93,7 @@ def draw_main_classifiers_on_image(image: list, classifiers: list) -> None:
         draw_weakclassifier_on_image(image, classifier)
 
 if __name__ == "__main__":
-    clf = ViolaJones.load("/Users/antoinegroudiev/Documents/Code/Car-Computer-Vision/source/from_scratch_impl/saves/face_cascade_1_5_10_50/sub_face5")
+    clf = ViolaJones.load("/Users/antoinegroudiev/Documents/Code/Car-Computer-Vision/source/from_scratch_impl/saves/stop_sign_cascade_1_5_10_50/sub_stop_sign5")
 
     image = cv2.cvtColor(np.array(read_image("ressources/training_images/faces_images/train/face/face00324.pgm"), dtype=np.uint8), cv2.COLOR_GRAY2BGR)
     draw_main_classifiers_on_image(image, clf.classifiers)

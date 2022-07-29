@@ -14,7 +14,7 @@ class ViolaJones:
         self.alphas = []
         self.classifiers = []
 
-    def train(self, training: list, training_len: int, test_len: int, percentile:int=10) -> None:
+    def train(self, training: list, percentile:int=10) -> None:
         """
         Entraîne les classificateurs à partir des données fournies.
         training: (ii, is_positive_example) array

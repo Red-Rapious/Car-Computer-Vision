@@ -24,7 +24,7 @@ SUFFLE = False
 
 TRAIN_MODEL = False
 TEST_MODEL = False
-TRAIN_CASCADE = True
+TRAIN_CASCADE = False
 TEST_CASCADE = True
 
 
@@ -50,7 +50,7 @@ def load_test_data():
 def train_viola(t):
     training = load_training_data()
     clf = ViolaJones(feature_number=t)
-    clf.train(training, training_len=2429, test_len=4548)
+    clf.train(training)
     evaluate(clf, training)
     clf.save(SAVE_FOLDER + OBJECT + str(t))
 
@@ -65,7 +65,7 @@ def train_cascade(layers, filename="Cascade"):
     clf = CascadeClassifier(layers)
     clf.train(training)
     evaluate(clf, training)
-    clf.save(SAVE_FOLDER + OBJECT + "_" + filename)
+    clf.save(SAVE_FOLDER + OBJECT + "_" + filename, OBJECT)
 
 def test_cascade(filename="Cascade"):
     test = load_test_data()

@@ -47,7 +47,7 @@ class CascadeClassifier:
                 return False
         return True
 
-    def save(self, filename:str) -> None:
+    def save(self, filename:str, object:str) -> None:
         """ Utilise le module Pickle pour sauvegarder le modèle entraîné"""
         os.mkdir(filename)
 
@@ -55,7 +55,7 @@ class CascadeClassifier:
             pickle.dump(self, f)
         
         for i, clf in enumerate(self.classifiers):
-            clf.save(filename + "/sub_face" + str(self.layers[i]))
+            clf.save(filename + "/sub_" + object + str(self.layers[i]))
 
     @staticmethod
     def load(filename:str):
