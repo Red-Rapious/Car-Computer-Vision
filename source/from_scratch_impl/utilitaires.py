@@ -17,7 +17,7 @@ class AccuracyMethod (enum.Enum):
     STANDARD = 0
     FSCORE = 1
 
-READING_MODE = ReadingMode.CUSTOM
+READING_MODE = ReadingMode.CV2
 
 def integral_image(image: list) -> list: # int array array -> int array array
     """ Convertit une image en son image intégrale """
@@ -55,7 +55,7 @@ def read_image(path: str) -> list: # str -> int array array
             raster = []
             for y in range(height):
                 row = []
-                for y in range(width):
+                for x in range(width):
                     row.append(ord(file.read(1)))
                 raster.append(row)
             return raster

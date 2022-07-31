@@ -2,10 +2,11 @@ from numpy import negative
 from ViolaJones import ViolaJones
 import pickle
 import os
+from utilitaires import integral_image
 
 class CascadeClassifier:
     def __init__(self, layers:list):
-        """ 'layers' est un tableau contenant le nombre de features pour chaque layer """
+        """ 'layers' est un tableau contenant le nombre de features T pour chaque sous-classificateur fort """
         self.layers = layers
         self.classifiers = []
 
@@ -40,10 +41,11 @@ class CascadeClassifier:
                     false_positives.append(example)
             neg = false_positives
 
-    def classify(self, image:list):
-        """ Indique si une image contient ou non l'objet précédement classifié """
+    def classify(self, image:list) -> bool:
+        """ Indique si une image contient ou non l'objet précédemment classifié """
+        ii = integral_image(image)
         for clf in self.classifiers:
-            if not clf.classify(image):
+            if not clf.classify(ii, alreadyII=True):
                 return False
         return True
 

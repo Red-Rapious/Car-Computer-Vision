@@ -173,7 +173,7 @@ class ViolaJones:
             applied_feature = sorted(zip(weight, feature, y), key= lambda x: x[1])
             pos_seen, neg_seen = 0, 0
             pos_weights, neg_weights = 0, 0
-            min_error, best_feature, best_treshold, best_polarity = float("inf"), None, None, None
+            min_error, best_feature, best_threshold, best_polarity = float("inf"), None, None, None
 
             for w, f, is_positive in applied_feature:
                 # Calcul de l'erreur
@@ -183,7 +183,7 @@ class ViolaJones:
                 if error < min_error:
                     min_error = error
                     best_feature = features[index]
-                    best_treshold = f
+                    best_threshold = f
                     best_polarity = 1 if pos_seen > neg_seen else -1
 
                 if is_positive:
@@ -194,7 +194,7 @@ class ViolaJones:
                     neg_weights += w
             
             # Création et ajout du classificateur optimal
-            classifier = WeakClassifier(best_feature[0], best_feature[1], best_treshold, best_polarity)
+            classifier = WeakClassifier(best_feature[0], best_feature[1], best_threshold, best_polarity)
             classifiers.append(classifier)
         
         return classifiers
@@ -216,10 +216,13 @@ class ViolaJones:
         
         return best_clf, best_error, best_accuracy
 
-    def classify(self, image: list) -> bool:
-        """ Indique si une image contient ou non l'objet précédement classifié """
+    def classify(self, image: list, alreadyII: bool=False) -> bool:
+        """ Indique si une image contient ou non l'objet précédemment classifié """
         total = 0
-        ii = integral_image(image)
+        if alreadyII:
+            ii = image
+        else:
+            ii = integral_image(image)
         
         for (alpha, clf) in zip(self.alphas, self.classifiers):
             total += alpha * clf.classify(ii)
