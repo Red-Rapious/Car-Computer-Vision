@@ -1,6 +1,5 @@
 from turtle import distance
 import cv2
-import time
 
 def encadrer_objet(x: int, y: int, width: int, height: int, image, texte: str, couleur=(0,255,0)):
    """ Fonction encadrant d'un carré vert un objet dans une image, qui a été précédement détecté """
@@ -10,7 +9,6 @@ def encadrer_objet(x: int, y: int, width: int, height: int, image, texte: str, c
 
    distance = calculer_distance(width)
    cv2.putText(image, f'distance : {round(distance, 2)} m', (x+int(global_size/5.5),y-int(global_size/20) - 20), cv2.FONT_HERSHEY_DUPLEX, 0.6, (0, 0, 255))
-   time.sleep(0.1)
 
 def calculer_distance(width: int):
    """ Fonction calculant la distance entre la caméra et l'objet à détecter """
