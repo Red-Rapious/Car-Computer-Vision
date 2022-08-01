@@ -60,6 +60,7 @@ class ViolaJones:
 
         print("Mise à jour des poids...")
         for t in range(self.feature_number):
+            weights = weights / np.linalg.norm(X, y, features, weights)
             weak_classifiers = self.train_weak_classifiers(X, y, features, weights)
             clf, error, accuracy = self.select_best_classifier(weak_classifiers, weights, training_data)
 
@@ -69,6 +70,7 @@ class ViolaJones:
             alpha = -np.log(beta)
             self.alphas.append(alpha)
             self.classifiers.append(clf)
+            print("Classificateur %s choisi, avec une précision %f et un alpha %f" % (str(clf), len(accuracy) - sum(accuracy), alpha))
 
         print("Phase d'entraînement terminée.")
         
@@ -157,9 +159,9 @@ class ViolaJones:
         total_pos, total_neg = 0, 0
         for w, is_positive in zip(weight, y):
             if is_positive:
-                total_pos += 1
+                total_pos += w
             else:
-                total_neg += 1
+                total_neg += w
         
         classifiers = []
         total_features = len(X)

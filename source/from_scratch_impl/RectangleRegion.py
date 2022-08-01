@@ -27,3 +27,8 @@ class RectangleRegion:
             exit()
 
         return p11 + p00 - p10 - p01
+
+    def __str__(self):
+        return "(x= %d, y= %d, width= %d, height= %d)" % (self.x, self.y, self.width, self.height)
+    def __repr__(self):
+        return "RectangleRegion(%d, %d, %d, %d)" % (self.x, self.y, self.width, self.height)

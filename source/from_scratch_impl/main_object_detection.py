@@ -17,6 +17,8 @@ from utilitaires import AccuracyMethod, measure_accuracy
 # HYPERPARAMÈTRES
 T = 5 # nombre de classificateurs faibles en cas de modèle seul
 OBJECT = "stop_sign"
+CASCADE_NAME = "cascade_1_5_10_50"
+CASCADE_LAYERS = [1, 5, 10, 50]
 
 # DEBUG
 IMG_NUMBER = -1
@@ -131,8 +133,8 @@ if __name__ == "__main__":
         test_viola(SAVE_FOLDER + OBJECT + str(T))
 
     if TRAIN_CASCADE:
-        train_cascade([1, 5, 10, 50], "cascade_1_5_10_50")
+        train_cascade(CASCADE_LAYERS, CASCADE_NAME)
     if TEST_CASCADE:
-        test_cascade("cascade_1_5_10_50")
+        test_cascade(CASCADE_NAME)
 
     print("\n       --- [FIN DU PROGRAMME] ---\n")

@@ -15,3 +15,6 @@ class WeakClassifier:
             return 1
         else:
             return 0
+
+    def __str__(self):
+        return "WeakClassifier(positive_regions={}, negative_regions={}, treshold={}, polarity={})".format(self.positive_regions, self.negative_regions, self.treshold, self.polarity)
