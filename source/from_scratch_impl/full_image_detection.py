@@ -39,6 +39,9 @@ def apply_cascade_to_image(cascade: CascadeClassifier, image_path) -> list:
                 if result:
                     boxes.append([x, y, SUBWINDOW_X*fact, SUBWINDOW_Y*fact])
                     detected = True
+                    #cv2.imshow("Resized image", res_image[x:x+SUBWINDOW_X, y:y+SUBWINDOW_Y])
+                    #cv2.waitKey(0)
+                    #cv2.deleteAllWindows()
                 if detect_map[x * fact][y * fact][0] or result:
                     detect_map[x * fact][y * fact] = (True, SUBWINDOW_X*fact, SUBWINDOW_Y*fact)
         

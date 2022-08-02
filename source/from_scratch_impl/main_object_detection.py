@@ -17,7 +17,7 @@ from utilitaires import AccuracyMethod, measure_accuracy
 # HYPERPARAMÈTRES
 T = 5 # nombre de classificateurs faibles en cas de modèle seul
 OBJECT = "stop_sign_v2"
-CASCADE_NAME = "cascade_1_5_10_25_50_75_100_125_150_175"
+CASCADE_NAME = "cascade_1_5"
 CASCADE_LAYERS = [1, 5, 10, 25, 50, 75, 100, 125, 150, 175]
 
 # DEBUG
@@ -26,7 +26,7 @@ SUFFLE = True
 
 TRAIN_MODEL = False
 TEST_MODEL = False
-TRAIN_CASCADE = True
+TRAIN_CASCADE = False
 TEST_CASCADE = True
 
 
