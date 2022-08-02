@@ -32,7 +32,7 @@ class CascadeClassifier:
                 break
             
             classifier = ViolaJones(feature_number=feature_num)
-            classifier.train(pos + neg, len(pos), len(neg))
+            classifier.train(pos + neg)
             self.classifiers.append(classifier)
 
             false_positives = []
@@ -57,7 +57,7 @@ class CascadeClassifier:
             pickle.dump(self, f)
         
         for i, clf in enumerate(self.classifiers):
-            clf.save(filename + "/sub_" + object + str(self.layers[i]))
+            clf.save(filename + "/sub_" + object + "_" + str(self.layers[i]))
 
     @staticmethod
     def load(filename:str):

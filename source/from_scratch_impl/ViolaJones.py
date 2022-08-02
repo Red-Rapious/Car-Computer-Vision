@@ -60,7 +60,7 @@ class ViolaJones:
 
         print("Mise à jour des poids...")
         for t in range(self.feature_number):
-            weights = weights / np.linalg.norm(X, y, features, weights)
+            weights = weights / np.linalg.norm(weights)
             weak_classifiers = self.train_weak_classifiers(X, y, features, weights)
             clf, error, accuracy = self.select_best_classifier(weak_classifiers, weights, training_data)
 
