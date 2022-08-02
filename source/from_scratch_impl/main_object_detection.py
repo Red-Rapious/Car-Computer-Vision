@@ -26,7 +26,7 @@ SUFFLE = False
 
 TRAIN_MODEL = False
 TEST_MODEL = False
-TRAIN_CASCADE = False
+TRAIN_CASCADE = True
 TEST_CASCADE = True
 
 

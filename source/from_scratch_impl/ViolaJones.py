@@ -60,6 +60,7 @@ class ViolaJones:
 
         print("Mise à jour des poids...")
         for t in range(self.feature_number):
+            print("Démarrage de la sélection des classificateurs pour la feature " + str(t) + "...")
             weights = weights / np.linalg.norm(weights)
             weak_classifiers = self.train_weak_classifiers(X, y, features, weights)
             clf, error, accuracy = self.select_best_classifier(weak_classifiers, weights, training_data)
@@ -70,7 +71,7 @@ class ViolaJones:
             alpha = -np.log(beta)
             self.alphas.append(alpha)
             self.classifiers.append(clf)
-            print("Classificateur %s choisi, avec une précision %f et un alpha %f" % (str(clf), len(accuracy) - sum(accuracy), alpha))
+            print("Classificateur %s choisi, avec une précision %f et un alpha %f \n" % (str(clf), len(accuracy) - sum(accuracy), alpha))
 
         print("Phase d'entraînement terminée.")
         
@@ -196,8 +197,16 @@ class ViolaJones:
                     neg_weights += w
             
             # Création et ajout du classificateur optimal
-            classifier = WeakClassifier(best_feature[0], best_feature[1], best_threshold, best_polarity)
-            classifiers.append(classifier)
+            if best_feature != None:
+                classifier = WeakClassifier(best_feature[0], best_feature[1], best_threshold, best_polarity)
+                classifiers.append(classifier)
+            else:
+                print("[WARNING] Aucun classificateur optimal n'a été trouvé pour la feature", index)
+                print("[DEBUG INFOS] len(applied_feature) :", len(applied_feature))
+                for w, f, is_positive in applied_feature:
+                    # Calcul de l'erreur
+                    error = min(neg_weights + total_pos - pos_weights, pos_weights - total_neg - neg_weights)
+                    print("Erreur :", error)
         
         return classifiers
 
