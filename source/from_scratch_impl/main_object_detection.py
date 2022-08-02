@@ -8,7 +8,7 @@
 import numpy as np
 import pickle
 import time
-from random import shuffle
+from random import shuffle, seed
 
 from ViolaJones import ViolaJones
 from CascadeClassifier import CascadeClassifier
@@ -21,8 +21,8 @@ CASCADE_NAME = "cascade_1_5_10_25_50_75_100_125_150_175"
 CASCADE_LAYERS = [1, 5, 10, 25, 50, 75, 100, 125, 150, 175]
 
 # DEBUG
-IMG_NUMBER = -1
-SUFFLE = False
+IMG_NUMBER = -1 # nombre d'images à utiliser pour l'entraînement ; -1 pour tout le set
+SUFFLE = True
 
 TRAIN_MODEL = False
 TEST_MODEL = False
@@ -34,6 +34,7 @@ TEST_CASCADE = True
 SAVE_FOLDER = "/Users/antoinegroudiev/Documents/Code/Car-Computer-Vision/source/from_scratch_impl/saves/"
 IMAGES_FOLDER = "././ressources/training_images/" + OBJECT + "_images/"
 PICKLE_IMAGES = IMAGES_FOLDER + "pickle_files/"
+seed(12345)
 
 def load_training_data():
     with open(PICKLE_IMAGES + "train.pkl", 'rb') as f:

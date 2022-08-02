@@ -60,7 +60,8 @@ class ViolaJones:
 
         print("Mise à jour des poids...")
         for t in range(self.feature_number):
-            print("Démarrage de la sélection des classificateurs pour la feature " + str(t) + "...")
+            print("Démarrage de la sélection des classificateurs pour la feature " + str(t+1) + "/" + str(self.feature_number) +  "...")
+            
             weights = weights / np.linalg.norm(weights)
             weak_classifiers = self.train_weak_classifiers(X, y, features, weights)
             clf, error, accuracy = self.select_best_classifier(weak_classifiers, weights, training_data)
@@ -135,11 +136,12 @@ class ViolaJones:
         y = list(map(lambda data: data[1], training_data)) # tableau de booléens
 
         i = 0
+        modulo = 10000
         last_time = time.time()
         for pos, neg in features:
             # Message de progression
-            if i%1000 == 0 and i != 0:
-                print("     [INFO] Avancée :", str(i) + "/" + str(len(features)), "     Temps pour 1000 features : " + str(round(time.time() - last_time, 2)) + "s    Temps restant estimé : " + str(round((time.time() - last_time) * (len(features) - i) / 1000 / 60, 0)) + "min")
+            if i%modulo == 0 and i != 0:
+                print("     [INFO] Avancée :", str(i) + "/" + str(len(features)), "     Temps pour", modulo, "features : " + str(round(time.time() - last_time, 2)) + "s    Temps restant estimé : " + str(round((time.time() - last_time) * (len(features) - i) / modulo / 60, 0)) + "min")
                 last_time = time.time()
             
             X[i] = [evaluation(training_data[j][0], pos, neg) for j in range(len(training_data))]
@@ -180,7 +182,7 @@ class ViolaJones:
 
             for w, f, is_positive in applied_feature:
                 # Calcul de l'erreur
-                error = min(neg_weights + total_pos - pos_weights, pos_weights - total_neg - neg_weights)
+                error = min(neg_weights + total_pos - pos_weights, pos_weights + total_neg - neg_weights)
                 
                 # Mise à jour des élements avec erreur minimale
                 if error < min_error:
@@ -197,16 +199,14 @@ class ViolaJones:
                     neg_weights += w
             
             # Création et ajout du classificateur optimal
-            if best_feature != None:
+            if best_feature is not None:
                 classifier = WeakClassifier(best_feature[0], best_feature[1], best_threshold, best_polarity)
                 classifiers.append(classifier)
             else:
-                print("[WARNING] Aucun classificateur optimal n'a été trouvé pour la feature", index)
-                print("[DEBUG INFOS] len(applied_feature) :", len(applied_feature))
-                for w, f, is_positive in applied_feature:
-                    # Calcul de l'erreur
-                    error = min(neg_weights + total_pos - pos_weights, pos_weights - total_neg - neg_weights)
-                    print("Erreur :", error)
+                pass
+                #print("[WARNING] Aucun classificateur optimal n'a été trouvé pour la feature", index)
+                #print("[DEBUG INFOS] len(applied_feature) :", len(applied_feature))
+                # Erreurs valent NaN
         
         return classifiers
 
@@ -225,7 +225,9 @@ class ViolaJones:
             if error < best_error:
                 best_clf, best_error, best_accuracy = clf, error, accuracy
         
-        return best_clf, best_error, best_accuracy
+        # note : pour éviter d'avoir une erreur strictement nulle qui nuirait à la suite des calculs,
+        # on met à la place une erreur minuscule
+        return best_clf, max(best_error, 0.001), best_accuracy
 
     def classify(self, image: list, alreadyII: bool=False) -> bool:
         """ Indique si une image contient ou non l'objet précédemment classifié """
