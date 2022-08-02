@@ -21,15 +21,14 @@ def apply_cascade_to_image(cascade: CascadeClassifier, image_path) -> list:
     detect_map = np.array([[(False, 0, 0) for j in range(len(image[0]) - SUBWINDOW_X + 1)] for i in range(len(image) - SUBWINDOW_Y + 1)])
     boxes =  []
 
-    print("[INFO] Début de l'analyse multi-scalaire")
+    print("[INFO] Début de l'analyse multi-scalaire de l'image :", image_path)
     max_factor = min(image.shape[0], image.shape[1])//19
     detected = False
     for fact in reversed(range(1, max_factor + 1, FACTOR_STEP)):
-        print("     Facteur", fact)
         
         # réduction de la taille de l'image
         res_image = np.array(cv2.resize(image, (0, 0), fx=1/fact, fy=1/fact, interpolation=cv2.INTER_NEAREST))
-        print("     Taille de l'image :", res_image.shape)
+        print("     Facteur :", fact, "     Taille de l'image :", res_image.shape)
         
         # analyse de chaque région de l'image
         for x in range(len(res_image) - SUBWINDOW_X + 1):
@@ -56,7 +55,7 @@ def encadrer_objet(x: int, y: int, width: int, height: int, image, texte: str = 
     cv2.putText(image, texte, (x+int(global_size/5.5),y-int(global_size/20)), cv2.FONT_HERSHEY_DUPLEX, global_size/340, couleur, 2, cv2.LINE_AA)
 
 if __name__ == "__main__":
-    cascade = CascadeClassifier.load("/Users/antoinegroudiev/Documents/Code/Car-Computer-Vision/source/from_scratch_impl/saves/face_cascade_1_5_10_50")
+    cascade = CascadeClassifier.load("/Users/antoinegroudiev/Documents/Code/Car-Computer-Vision/source/from_scratch_impl/saves/stop_sign_v2_cascade_1_5")
     #image_path = "/Users/antoinegroudiev/Documents/Code/Car-Computer-Vision/ressources/training_images/stop_sign_images/stop_signs_images_unprocessed/train/0G8PNL4D4CI0.jpg"
     #image_path = "/Users/antoinegroudiev/Documents/Code/Car-Computer-Vision/ressources/full_test_images/5MXRDZVI05NT.jpg"
     images_folder = glob.glob("/Users/antoinegroudiev/Documents/Code/Car-Computer-Vision/ressources/full_test_images/*.jpg")

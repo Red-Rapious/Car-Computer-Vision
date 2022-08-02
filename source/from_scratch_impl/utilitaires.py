@@ -117,10 +117,13 @@ def measure_accuracy(true_positives:int, true_negatives: int, false_positives: i
 
         return 2 / (1/precision + 1/recall)
 
-if __name__ == "__main__":
-    print("     [DEBUT DU PROGRAMME]")
+def picklisation():
     name = "/Users/antoinegroudiev/Documents/Code/Car-Computer-Vision/ressources/training_images/stop_sign_v2_images/pickle_files/train"
     positive_folder = "/Users/antoinegroudiev/Documents/Code/Car-Computer-Vision/ressources/training_images/stop_sign_v2_images/stop_sign_v2_images_processed/train"
     negative_folder = "/Users/antoinegroudiev/Documents/Code/Car-Computer-Vision/ressources/training_images/face_images/train/non-face"
     images_to_pickle(name, positive_folder, negative_folder, ".pgm", max_negatives=276*5)
+
+if __name__ == "__main__":
+    print("     [DEBUT DU PROGRAMME]")
+    picklisation()
     print("     [FIN DU PROGRAMME]")
