@@ -26,7 +26,7 @@ SUFFLE = True
 
 TRAIN_MODEL = False
 TEST_MODEL = False
-TRAIN_CASCADE = True
+TRAIN_CASCADE = False
 TEST_CASCADE = True
 
 
@@ -112,8 +112,8 @@ def evaluate(clf, data):
     fscore = measure_accuracy(true_positives, true_negatives, false_positives, false_negatives, AccuracyMethod.FSCORE)
 
     print("'Précision' (accuracy) :")
-    print("     Méthode Standard :", str(round(standard, 2)), " (%d/%d)" % (correct, len(data)))
-    print("     F-Score          :", round(fscore, 2))
+    print("     Méthode Standard :", str(round(standard, 3)), " (%d/%d)" % (correct, len(data)))
+    print("     F-Score          :", round(fscore, 3))
     print(" Temps moyen de classification :", str(classification_time / len(data)) + "s")
 
 if __name__ == "__main__":
