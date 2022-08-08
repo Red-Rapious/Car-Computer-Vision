@@ -1,6 +1,6 @@
 import cv2
 import sys
-sys.path.insert(0, "/Users/antoinegroudiev/Documents/Code/Car-Computer-Vision/source/opencv_impl/yolo")
+sys.path.insert(0, '/Users/antoinegroudiev/Documents/Code/Car-Computer-Vision/source/opencv_impl/yolo')
 from object_detector import ObjectDetector
 from utilitaires import encadrer_objet
 import time
