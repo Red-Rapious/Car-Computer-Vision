@@ -1,12 +1,12 @@
 import cv2
 import glob
-from vehicle_detector import VehicleDetector
+from object_detector import ObjectDetector
 import time
 
 scale_percent = 50
 
 # Load Veichle Detector
-vd = VehicleDetector()
+vd = ObjectDetector("/Users/antoinegroudiev/Documents/Code/Car-Computer-Vision/source/opencv_impl/yolo/dnn_model/vehicle_yolov4.cfg", "/Users/antoinegroudiev/Documents/Code/Car-Computer-Vision/source/opencv_impl/yolo/dnn_model/vehicle_yolov4.weights", None, 1/255)
 
 # Load images from a folder
 images_folder = glob.glob("/Users/antoinegroudiev/Documents/Code/Car-Computer-Vision/source/opencv_impl/yolo/images/*.jpg")
@@ -20,7 +20,7 @@ for img_path in images_folder:
     img = cv2.resize(img, (int(img.shape[1] * scale_percent / 100), int(img.shape[0] * scale_percent / 100)))
 
     t_start = time.time()
-    vehicle_boxes = vd.detect_vehicles(img)
+    vehicle_boxes = vd.detect_objects(img)
     vehicle_count = len(vehicle_boxes)
     print("Temps :", time.time() - t_start, "sec.")
 
