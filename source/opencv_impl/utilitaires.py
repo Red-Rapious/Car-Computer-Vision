@@ -1,4 +1,3 @@
-from turtle import distance
 import cv2
 
 def encadrer_objet(x: int, y: int, width: int, height: int, image, texte: str, couleur=(0,255,0)):

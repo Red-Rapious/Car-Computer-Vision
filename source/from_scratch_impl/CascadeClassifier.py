@@ -1,4 +1,3 @@
-from numpy import negative
 from ViolaJones import ViolaJones
 import pickle
 import os
