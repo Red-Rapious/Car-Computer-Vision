@@ -1,0 +1,66 @@
+\documentclass[12pt,a4paper]{article} 
+
+\usepackage[a4paper,margin=2cm]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{pslatex}
+\usepackage[utf8]{inputenc}
+\usepackage[greek,francais]{babel} 
+\usepackage{graphicx} 
+\usepackage{amsmath} 
+\setlength{\unitlength}{1mm}
+\usepackage{enumitem}
+\usepackage{cancel}
+\usepackage{amssymb} % pour les ensembles NN
+\usepackage{mathrsfs} % pour les hypothèses de récurrences \PP
+\usepackage{fancyhdr}
+\usepackage[boldLipsian,10pt,GlyphNames]{teubner}
+\usepackage{fancybox}
+\usepackage{multicol}
+
+\lhead{Antoine Groudiev}
+\chead{}
+\rhead{MP*, Charlemange}
+
+\lfoot{\jobname.tex}
+\cfoot{Mesures de la précision}
+\rfoot{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0.4pt}
+
+\author{Antoine Groudiev}
+\title{Mesures de la précision}
+\date{\today} 
+
+\begin{document}
+%\maketitle
+
+On rappelle la distinction entre exactitude et précision : l'exactitude (\textit{accuracy}) mesure la proximité des valeurs de test à des valeurs de référence. La précision (\textit{precision}) mesure la proximité des mesures les unes par rapport aux autres.
+
+\section{Informations à disposition}
+\begin{enumerate}
+    \item $V_p$, le nombre de vrais positifs (i.e. images positives classées positivement)
+    \item $V_n$, le nombre de vrais négatifs (i.e. images négatives classées négativement)
+    \item $F_p$, le nombre de faux positifs (i.e. images négatives classées positivement)
+    \item $F_n$, le nombre de faux négatifs (i.e. images positives classées négativement)
+\end{enumerate}
+
+\section{Approche standard}
+Il semble intuitif de poser l'exactitude comme étant :
+$$ A = \frac{bons\ classements}{total} $$
+Ou encore avec les notations introduites précédement :
+$$\boxed{A = \frac{V_p + V_n}{V_P + V_n + F_p + F_n}}$$
+
+Cependant, cette méthode de calcul introduit des biais en cas de déséquilibre important entre le nombre d'images positives et le nombre d'images négatives. Nos échantillons de tests étant fortement déséqulibrés, il faut introduire une nouvelle méthode de calcul de l'exactitude.
+
+\section{F-Score}
+On utilise alors le F-Score ou F1-Score, définie comme la moyenne harmonique de la précision et du rappel.
+
+La précision est définie comme :
+$$ P = \frac{bons\ classements}{classements\ positifs} = \boxed{\frac{V_p}{V_P + F_p}} $$
+Le rappel est défini comme :
+$$ R = \frac{bons\ classements}{images\ positives} = \boxed{\frac{V_p}{V_P + F_n}} $$
+
+Finalement, l'exactitude est calculée comme la moyenne harmonique des deux :
+$$\boxed{A = \frac{2}{\frac{1}{P} + \frac{1}{R}}}$$
+
+\end{document}
