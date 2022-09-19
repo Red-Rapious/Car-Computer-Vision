@@ -10,7 +10,7 @@ SUBWINDOW_Y = 19
 FACTOR_STEP = 1
 SHIFT_SCALE = 2
 MAX_FACTOR = 10
-MIN_FACTOR = 3
+MIN_FACTOR = 4
 
 FIRST_DETECT_ONLY = True
 
@@ -29,7 +29,6 @@ def apply_cascade_to_image(cascade: CascadeClassifier, image_path) -> list:
 
     print("[INFO] Début de l'analyse multi-scalaire de l'image :", image_path, "de taille", image.shape)
     max_factor = min(min(image.shape[0], image.shape[1])//19, MAX_FACTOR)
-    detected = False
     for fact in reversed(range(MIN_FACTOR, max_factor + 1, FACTOR_STEP)):
         
         # réduction de la taille de l'image

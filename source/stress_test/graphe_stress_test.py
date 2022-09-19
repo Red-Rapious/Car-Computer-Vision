@@ -24,10 +24,10 @@ br2 = [x + barWidth for x in br1]
 br3 = [x + barWidth for x in br2]
 br4 = [x + barWidth for x in br3]
 
-plt.bar(br1, MB, color = 'b', width = barWidth, label ='MacBook Pro (Intel i7)')
-plt.bar(br2, IPA, color ='g', width = barWidth, label ='iPad Pro (Apple A10X)')
-plt.bar(br3, IPO, color ='y', width = barWidth, label ='iPhone XR (Apple A12)')
-plt.bar(br4, RPI, color ='r', width = barWidth, label ='Raspberry Pi 4 (ARM Cortex A72)')
+plt.bar(br1, MB, color = 'limegreen', width = barWidth, label ='MacBook Pro (Intel i7)')
+plt.bar(br2, IPA, color ='gold', width = barWidth, label ='iPad Pro (Apple A10X)')
+plt.bar(br3, IPO, color ='darkorange', width = barWidth, label ='iPhone XR (Apple A12)')
+plt.bar(br4, RPI, color ='crimson', width = barWidth, label ='Raspberry Pi 4 (ARM Cortex A72)')
  
 plt.xlabel("Le plus bas est le mieux", fontweight="bold")
 plt.ylabel("Temps d'exécution (secondes)", fontweight="bold")
