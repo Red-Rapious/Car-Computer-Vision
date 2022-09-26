@@ -28,7 +28,6 @@ def apply_cascade_to_image(cascade: CascadeClassifier, image, printing=False, na
             print("[ERREUR] Impossible de classifier l'image - taille insuffisante :", image.shape)
         return False
 
-    #detect_map = np.array([[(False, 0, 0) for j in range(len(image[0]) - SUBWINDOW_X + 1)] for i in range(len(image) - SUBWINDOW_Y + 1)])
     boxes =  []
 
     if printing:
