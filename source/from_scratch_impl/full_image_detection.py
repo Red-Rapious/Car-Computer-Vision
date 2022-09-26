@@ -5,8 +5,10 @@ import cv2
 import glob
 import os
 import time
+import random
 
 REAL_TIME_MODE = False
+SHOW_IMAGES = False
 
 SUBWINDOW_X = 19
 SUBWINDOW_Y = 19
@@ -15,7 +17,7 @@ SHIFT_SCALE = 2
 MAX_FACTOR = 8
 MIN_FACTOR = 5
 
-FIRST_DETECT_ONLY = True
+FIRST_DETECT_ONLY = True # la valeur False multiplie le temps de détection par 10 en moyenne
 
 def apply_cascade_to_image(cascade: CascadeClassifier, image, printing=False, name="") -> list:
     subwindows_nb = 0
@@ -117,14 +119,54 @@ if __name__ == "__main__":
 
     else:
         cascade = CascadeClassifier.load("/Users/antoinegroudiev/Documents/Code/Car-Computer-Vision/source/from_scratch_impl/saves/stop_sign_v2_cascade_1_5")
-        images_folder = glob.glob("/Users/antoinegroudiev/Documents/Code/Car-Computer-Vision/ressources/fullsize_test_images/*")
+        pos_folder = glob.glob("/Users/antoinegroudiev/Documents/Code/Car-Computer-Vision/ressources/fullsize_test_images/positives/*")
+        neg_folder = glob.glob("/Users/antoinegroudiev/Documents/Code/Car-Computer-Vision/ressources/fullsize_test_images/negatives/*")
+        random.seed(12345)
+        random.shuffle(pos_folder)
+        random.shuffle(neg_folder)
+        images_folder = []
+
+        while len(pos_folder) > 0 or len(neg_folder) > 0:
+            if len(pos_folder) > 0:
+                images_folder.append(pos_folder.pop())
+            if len(neg_folder) > 0:
+                images_folder.append(neg_folder.pop())
         
+        tp, fp, tn, fn = 0, 0, 0, 0
+        i = 0
+        tot_time = 0
+        previous_time = time.time()
         for image_path in images_folder:
             cv2.destroyAllWindows()
-            boxes = apply_cascade_to_image(cascade, read_image(image_path), printing=True, name=image_path)
+            boxes = apply_cascade_to_image(cascade, read_image(image_path), printing=False, name=image_path)
+            
+            tot_time += time.time() - previous_time
+            previous_time = time.time()
+            
+            if i % 2 == 0: # image sensé être positive
+                if len(boxes) > 0:
+                    tp += 1
+                else:
+                    fn += 1
+            else: # image sensé être négative
+                if len(boxes) == 0:
+                    tn += 1
+                else:
+                    fp += 1
 
-            image = cv2.imread(image_path)
-            for box in boxes:
-                encadrer_objet(box[0], box[1], box[2], box[3], image, "", box[4])
-            cv2.imshow(os.path.basename(image_path), image)
-            cv2.waitKey(0)
+
+            if SHOW_IMAGES:
+                image = cv2.imread(image_path)
+                for box in boxes:
+                    encadrer_objet(box[0], box[1], box[2], box[3], image, "", box[4])
+                cv2.imshow(os.path.basename(image_path), image)
+                cv2.waitKey(0)
+
+            i += 1
+        
+        print("\n[RESULTATS] Analyse de", i, "images")
+        print("     + Vrais positifs : " + str(tp))
+        print("     - Faux positifs : " + str(fp))
+        print("     + Vrais négatifs : " + str(tn))
+        print("     - Faux négatifs : " + str(fn))
+        print("Temps moyen d'analyse d'une image: " + str(round(tot_time/i, 3)) + "s")
