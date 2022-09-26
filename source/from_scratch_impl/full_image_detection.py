@@ -6,6 +6,8 @@ import glob
 import os
 import time
 
+REAL_TIME_MODE = False
+
 SUBWINDOW_X = 19
 SUBWINDOW_Y = 19
 FACTOR_STEP = 1
@@ -66,68 +68,64 @@ def encadrer_objet(x: int, y: int, width: int, height: int, image, texte: str = 
         cv2.putText(image, texte, (x+int(global_size/5.5),y-int(global_size/20)), cv2.FONT_HERSHEY_DUPLEX, global_size/340, couleur, 2, cv2.LINE_AA)
 
 if __name__ == "__main__":
-    cascade = CascadeClassifier.load("/Users/antoinegroudiev/Documents/Code/Car-Computer-Vision/source/from_scratch_impl/saves/stop_sign_v2_cascade_1_5")
-    capture = cv2.VideoCapture(0)
-    if not capture.isOpened():
-        print("Erreur : la caméra n'est pas allumée'")
-        exit(0)
-
-
-    frame_precendente = time.time()
-    # Boucle de détection d'image dans la caméra
-    nb_frames = 0
-    moyenne_delta = 0
-    moyenne_fps = 0
-    while True:
-        # IMAGE SOURCE
-        rtbool, image = capture.read() # lecture de la caméra
-        if not rtbool: # erreur en cas de lecture impossible
-            print("Erreur : la VideoCapture n'a pas pu être lue")
+    if REAL_TIME_MODE:
+        cascade = CascadeClassifier.load("/Users/antoinegroudiev/Documents/Code/Car-Computer-Vision/source/from_scratch_impl/saves/stop_sign_v2_cascade_1_5")
+        capture = cv2.VideoCapture(0)
+        if not capture.isOpened():
+            print("Erreur : la caméra n'est pas allumée'")
             exit(0)
 
-        # FPS, ETC
-        frame_actuelle = time.time()
-        delta = frame_actuelle - frame_precendente
-        frame_precendente = frame_actuelle
 
-        moyenne_delta = (moyenne_delta * nb_frames + delta) / (nb_frames + 1)
-        moyenne_fps = (moyenne_fps * nb_frames + 1/delta) / (nb_frames + 1)
+        frame_precendente = time.time()
+        # Boucle de détection d'image dans la caméra
+        nb_frames = 0
+        moyenne_delta = 0
+        moyenne_fps = 0
+        while True:
+            # IMAGE SOURCE
+            rtbool, image = capture.read() # lecture de la caméra
+            if not rtbool: # erreur en cas de lecture impossible
+                print("Erreur : la VideoCapture n'a pas pu être lue")
+                exit(0)
 
-        nb_frames += 1
+            # FPS, ETC
+            frame_actuelle = time.time()
+            delta = frame_actuelle - frame_precendente
+            frame_precendente = frame_actuelle
 
-        boxes = apply_cascade_to_image(cascade, image)
-        for box in boxes:
-            encadrer_objet(box[0], box[1], box[2], box[3], image, "", box[4])
+            moyenne_delta = (moyenne_delta * nb_frames + delta) / (nb_frames + 1)
+            moyenne_fps = (moyenne_fps * nb_frames + 1/delta) / (nb_frames + 1)
 
-        cv2.putText(image, "FPS: " + str(round(1/delta, 3)), (10, 40), cv2.FONT_HERSHEY_DUPLEX, 0.7, (0, 255, 0), 2, cv2.LINE_AA)
-        cv2.imshow("Camera", image)
+            nb_frames += 1
 
-        key = cv2.waitKey(1)
-        if key == 27:
-            break
+            boxes = apply_cascade_to_image(cascade, image)
+            for box in boxes:
+                encadrer_objet(box[0], box[1], box[2], box[3], image, "", box[4])
 
-    capture.release()
-    cv2.destroyAllWindows()
-    print("[RESULTATS]")
-    print("     Delta moyen: " + str(round(moyenne_delta, 3)) + "s")
-    print("     FPS moyen: " + str(round(moyenne_fps, 3)))
+            cv2.putText(image, "FPS: " + str(round(1/delta, 3)), (10, 40), cv2.FONT_HERSHEY_DUPLEX, 0.7, (0, 255, 0), 2, cv2.LINE_AA)
+            cv2.imshow("Camera", image)
 
+            key = cv2.waitKey(1)
+            if key == 27:
+                break
 
-
-'''
-if __name__ == "__main__":
-    cascade = CascadeClassifier.load("/Users/antoinegroudiev/Documents/Code/Car-Computer-Vision/source/from_scratch_impl/saves/stop_sign_v2_cascade_1_5")
-    #image_path = "/Users/antoinegroudiev/Documents/Code/Car-Computer-Vision/ressources/training_images/stop_sign_images/stop_signs_images_unprocessed/train/0G8PNL4D4CI0.jpg"
-    #image_path = "/Users/antoinegroudiev/Documents/Code/Car-Computer-Vision/ressources/full_test_images/5MXRDZVI05NT.jpg"
-    images_folder = glob.glob("/Users/antoinegroudiev/Documents/Code/Car-Computer-Vision/ressources/full_test_images/*.jpg")
-    
-    for image_path in images_folder:
+        capture.release()
         cv2.destroyAllWindows()
-        boxes = apply_cascade_to_image(cascade, read_image(image_path), printing=True, name=image_path)
+        print("[RESULTATS]")
+        print("     Delta moyen: " + str(round(moyenne_delta, 3)) + "s")
+        print("     FPS moyen: " + str(round(moyenne_fps, 3)))
 
-        image = cv2.imread(image_path)
-        for box in boxes:
-            encadrer_objet(box[0], box[1], box[2], box[3], image, "", box[4])
-        cv2.imshow(os.path.basename(image_path), image)
-        cv2.waitKey(0)
-'''
+
+    else:
+        cascade = CascadeClassifier.load("/Users/antoinegroudiev/Documents/Code/Car-Computer-Vision/source/from_scratch_impl/saves/stop_sign_v2_cascade_1_5")
+        images_folder = glob.glob("/Users/antoinegroudiev/Documents/Code/Car-Computer-Vision/ressources/fullsize_test_images/*")
+        
+        for image_path in images_folder:
+            cv2.destroyAllWindows()
+            boxes = apply_cascade_to_image(cascade, read_image(image_path), printing=True, name=image_path)
+
+            image = cv2.imread(image_path)
+            for box in boxes:
+                encadrer_objet(box[0], box[1], box[2], box[3], image, "", box[4])
+            cv2.imshow(os.path.basename(image_path), image)
+            cv2.waitKey(0)
