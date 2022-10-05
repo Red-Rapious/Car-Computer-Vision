@@ -62,16 +62,19 @@ class ViolaJones:
         for t in range(self.feature_number):
             print("Démarrage de la sélection des classificateurs pour la feature " + str(t+1) + "/" + str(self.feature_number) +  "...")
             
-            weights = weights / np.linalg.norm(weights)
+            weights = weights / np.linalg.norm(weights) # normalisation des poids
             weak_classifiers = self.train_weak_classifiers(X, y, features, weights)
-            clf, error, accuracy = self.select_best_classifier(weak_classifiers, weights, training_data)
 
+            # sélection du meilleur classificateur
+            clf, error, accuracy = self.select_best_classifier(weak_classifiers, weights, training_data)
+            self.classifiers.append(clf)
+
+            # mise à jour des poids
             beta = error / (1.0 - error)
             for i in range(len(accuracy)):
                 weights[i] = weights[i] * (beta ** (1 - accuracy[i]))
             alpha = -np.log(beta)
             self.alphas.append(alpha)
-            self.classifiers.append(clf)
             print("Classificateur %s choisi, avec une précision %f et un alpha %f \n" % (str(clf), len(accuracy) - sum(accuracy), alpha))
 
         print("Phase d'entraînement terminée.")

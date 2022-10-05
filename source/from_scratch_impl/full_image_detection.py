@@ -7,7 +7,8 @@ import os
 import time
 import random
 
-REAL_TIME_MODE = False
+REAL_TIME_MODE = True
+RES_DOWNSCALE = 2.5
 SHOW_IMAGES = False
 
 SUBWINDOW_X = 19
@@ -85,6 +86,8 @@ if __name__ == "__main__":
         while True:
             # IMAGE SOURCE
             rtbool, image = capture.read() # lecture de la caméra
+
+            image = np.array(cv2.resize(image, (0, 0), fx=1/RES_DOWNSCALE, fy=1/RES_DOWNSCALE, interpolation=cv2.INTER_NEAREST))
             if not rtbool: # erreur en cas de lecture impossible
                 print("Erreur : la VideoCapture n'a pas pu être lue")
                 exit(0)
@@ -104,6 +107,8 @@ if __name__ == "__main__":
                 encadrer_objet(box[0], box[1], box[2], box[3], image, "", box[4])
 
             cv2.putText(image, "FPS: " + str(round(1/delta, 3)), (10, 40), cv2.FONT_HERSHEY_DUPLEX, 0.7, (0, 255, 0), 2, cv2.LINE_AA)
+            
+            image = np.array(cv2.resize(image, (0, 0), fx=RES_DOWNSCALE, fy=RES_DOWNSCALE, interpolation=cv2.INTER_NEAREST))
             cv2.imshow("Camera", image)
 
             key = cv2.waitKey(1)

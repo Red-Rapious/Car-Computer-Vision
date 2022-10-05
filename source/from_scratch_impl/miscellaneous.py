@@ -86,7 +86,7 @@ def show_integral_image_process(filepath:str = "ressources/training_images/faces
 
     cv2.imshow("Image en nuances de gris", cv2.resize(image, (0, 0), fx=30, fy=30, interpolation=cv2.INTER_NEAREST))
     show_image_as_table(image, title="Image numérique")
-    show_image_as_table(integral_image(image), title="Image intégrale")
+    show_image_as_table(np.int_(integral_image(image)), title="Image intégrale")
 
 def draw_main_classifiers_on_image(image: list, classifiers: list) -> None:
     for classifier in classifiers:
@@ -95,11 +95,13 @@ def draw_main_classifiers_on_image(image: list, classifiers: list) -> None:
 if __name__ == "__main__":
     clf = ViolaJones.load("/Users/antoinegroudiev/Documents/Code/Car-Computer-Vision/source/from_scratch_impl/saves/stop_sign_v2_cascade_1_5_10/sub_stop_sign_v2_10")
 
-    image = cv2.cvtColor(np.array(read_image("ressources/training_images/stop_sign_images/stop_signs_images_processed/train/stop_sign_train_31.pgm"), dtype=np.uint8), cv2.COLOR_GRAY2BGR)
-    draw_main_classifiers_on_image(image, clf.classifiers)
+    image = cv2.cvtColor(np.array(read_image("ressources/training_images/stop_sign_images/stop_signs_images_processed/train/stop_sign_train_44.pgm"), dtype=np.uint8), cv2.COLOR_GRAY2BGR)
+    #draw_main_classifiers_on_image(image, clf.classifiers)
 
     image = cv2.resize(image, (0, 0), fx=15, fy=15, interpolation=cv2.INTER_NEAREST)
 
     cv2.imshow(" ", image)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
+
+    show_integral_image_process("ressources/training_images/stop_sign_images/stop_signs_images_processed/train/stop_sign_train_44.pgm")
