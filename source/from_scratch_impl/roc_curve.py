@@ -7,16 +7,14 @@ import matplotlib.pyplot as plt
 from ViolaJones import ViolaJones
 from CascadeClassifier import CascadeClassifier
 from utilitaires import AccuracyMethod, measure_accuracy
+from full_image_detection import apply_cascade_to_image
+
+FULLSIZE = True
 
 # HYPERPARAMÈTRES
-T = 5 # nombre de classificateurs faibles en cas de modèle seul
 OBJECT = "stop_sign_v2"
 CASCADE_NAME = "cascade_1_5_10"
 CASCADE_LAYERS = [1, 5, 10, 25, 50, 75, 100]
-
-# DEBUG
-IMG_NUMBER = -1 # nombre d'images à utiliser pour l'entraînement ; -1 pour tout le set
-SUFFLE = True
 
 SAVE_FOLDER = "/Users/antoinegroudiev/Documents/Code/Car-Computer-Vision/source/from_scratch_impl/saves/"
 IMAGES_FOLDER = "././ressources/training_images/" + OBJECT + "_images/"
@@ -26,10 +24,7 @@ seed(12345)
 def load_training_data():
     with open(PICKLE_IMAGES + "train.pkl", 'rb') as f:
         training = pickle.load(f)
-    if SUFFLE:
-        shuffle(training)
-    if IMG_NUMBER != -1:
-        training = training[:IMG_NUMBER]
+    shuffle(training)
     return training
 
 def load_test_data():
@@ -43,6 +38,19 @@ def test_cascade(filename="Cascade"):
     data = test + train
     clf = CascadeClassifier.load(SAVE_FOLDER + OBJECT + "_" + filename)
     evaluate(clf, data)
+
+def test_fullsize_cascade(filename="Cascade"):
+    test = load_test_data()
+    train = load_training_data()
+    data = test + train
+    clf = CascadeClassifier.load(SAVE_FOLDER + OBJECT + "_" + filename)
+    evaluate(clf, data)
+
+def classify(x, clf):
+    if FULLSIZE:
+        return len(apply_cascade_to_image(x, clf)) > 0
+    else:
+        return clf.classify(x)
 
 def evaluate(clf, data):
     correct = 0
@@ -60,7 +68,7 @@ def evaluate(clf, data):
             tot_negatives += 1
 
         start = time.time()
-        prediction = clf.classify(x)
+        prediction = classify(x, clf)
         classification_time += time.time() - start
         if prediction == 1 and y == 0:
             false_positives += 1
@@ -74,21 +82,15 @@ def evaluate(clf, data):
         
         correct += 1 if prediction == y else 0
     
-    print("\n[RESULTATS]")
-    print("Classification :")
-    print("     Vrais Positifs : %d/%d (%f)" % (true_positives, tot_positives, true_positives/tot_positives))
-    print("     Vrais Négatifs : %d/%d (%f)" % (true_negatives, tot_negatives, true_negatives/tot_negatives))
-    print("     Faux Positifs  : %d/%d (%f)" % (false_positives, tot_negatives, false_positives/tot_negatives))
-    print("     Faux Négatifs  : %d/%d (%f)" % (false_negatives, tot_positives, false_negatives/tot_positives))
-    standard = measure_accuracy(true_positives, true_negatives, false_positives, false_negatives, AccuracyMethod.STANDARD)
-    fscore = measure_accuracy(true_positives, true_negatives, false_positives, false_negatives, AccuracyMethod.FSCORE)
+    #fig, axes = plt.subplots(figsize =(7, 5), num="Courbe ROC")
+    fig, axes = plt.subplots(num="Courbe ROC")
 
-    print("'Précision' (accuracy) :")
-    print("     Méthode Standard :", str(round(standard, 3)), " (%d/%d)" % (correct, len(data)))
-    print("     F-Score          :", round(fscore, 3))
-    print(" Temps moyen de classification :", str(classification_time / len(data)) + "s")
-
-    plt.plot([i for i in range(len(curve))], curve)
+    axes.plot([i+1 for i in range(len(curve))], curve)
+    plt.xticks(range(1, len(curve)+1))
+    plt.title("Courbe ROC")
+    plt.ylabel("Exactitude", fontweight="bold")
+    plt.xlabel("Faux Positifs", fontweight="bold")
+    axes.yaxis.set_view_interval(0, 1)
     plt.show()
 
 if __name__ == "__main__":
