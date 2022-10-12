@@ -8,7 +8,7 @@ import time
 import random
 
 REAL_TIME_MODE = True
-RES_DOWNSCALE = 2.5
+RES_DOWNSCALE = 2.5 # diminue la taille de l'image pour accélérer le traitement
 SHOW_IMAGES = False
 
 SUBWINDOW_X = 19
@@ -18,7 +18,7 @@ SHIFT_SCALE = 2
 MAX_FACTOR = 8
 MIN_FACTOR = 5
 
-FIRST_DETECT_ONLY = True # la valeur False multiplie le temps de détection par 10 en moyenne
+FIRST_DETECT_ONLY = False # la valeur False multiplie le temps de détection par 10 en moyenne
 
 def apply_cascade_to_image(cascade: CascadeClassifier, image, printing=False, name="") -> list:
     subwindows_nb = 0
@@ -71,7 +71,8 @@ def encadrer_objet(x: int, y: int, width: int, height: int, image, texte: str = 
 
 if __name__ == "__main__":
     if REAL_TIME_MODE:
-        cascade = CascadeClassifier.load("/Users/antoinegroudiev/Documents/Code/Car-Computer-Vision/source/from_scratch_impl/saves/stop_sign_v2_cascade_1_5")
+        cascade_name = "stop_sign_v2_cascade_1_5"
+        cascade = CascadeClassifier.load("/Users/antoinegroudiev/Documents/Code/Car-Computer-Vision/source/from_scratch_impl/saves/" + cascade_name)
         capture = cv2.VideoCapture(0)
         if not capture.isOpened():
             print("Erreur : la caméra n'est pas allumée'")
@@ -83,6 +84,7 @@ if __name__ == "__main__":
         nb_frames = 0
         moyenne_delta = 0
         moyenne_fps = 0
+        moyenne_boxes = 0
         while True:
             # IMAGE SOURCE
             rtbool, image = capture.read() # lecture de la caméra
@@ -103,13 +105,14 @@ if __name__ == "__main__":
             nb_frames += 1
 
             boxes = apply_cascade_to_image(cascade, image)
+            moyenne_boxes = (moyenne_boxes * nb_frames + len(boxes)) / (nb_frames + 1)
             for box in boxes:
                 encadrer_objet(box[0], box[1], box[2], box[3], image, "", box[4])
 
             
             image = np.array(cv2.resize(image, (0, 0), fx=RES_DOWNSCALE, fy=RES_DOWNSCALE, interpolation=cv2.INTER_NEAREST))
             cv2.putText(image, "FPS: " + str(round(1/delta, 3)), (10, 40), cv2.FONT_HERSHEY_DUPLEX, 0.7, (0, 255, 0), 2, cv2.LINE_AA)
-            cv2.imshow("Camera", image)
+            cv2.imshow("Cascade : " + cascade_name, image)
 
             key = cv2.waitKey(1)
             if key == 27:
@@ -120,6 +123,7 @@ if __name__ == "__main__":
         print("[RESULTATS]")
         print("     Delta moyen: " + str(round(moyenne_delta, 3)) + "s")
         print("     FPS moyen: " + str(round(moyenne_fps, 3)))
+        print("     Nombre moyen de rectangles dans une image :", int(moyenne_boxes))
 
 
     else:

@@ -1,6 +1,5 @@
 from utilitaires import evaluation
 
-# TODO: corriger la faute de frappe "treshold" à la place de "threshold" puis ré-entraîner le modèle
 class WeakClassifier:
     def __init__(self, positive_regions: list, negative_regions: list, threshold: float, polarity: int):
         assert(polarity == -1 or polarity == 1)
