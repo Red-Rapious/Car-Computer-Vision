@@ -39,10 +39,14 @@ def test_cascade(filename="Cascade"):
     clf = CascadeClassifier.load(SAVE_FOLDER + OBJECT + "_" + filename)
     evaluate(clf, data)
 
+def load_fullsize_data():
+    with open("././ressources/fullsize_test_images/pickle_files/fullsize_test.pkl", 'rb') as f:
+        data = pickle.load(f)
+    return data
+
 def test_fullsize_cascade(filename="Cascade"):
-    test = load_test_data()
-    train = load_training_data()
-    data = test + train
+    data = load_fullsize_data()
+    shuffle(data)
     clf = CascadeClassifier.load(SAVE_FOLDER + OBJECT + "_" + filename)
     evaluate(clf, data)
 
