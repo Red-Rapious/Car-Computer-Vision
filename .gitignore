@@ -133,6 +133,7 @@ dmypy.json
 ressources/videos/*
 ressources/training_data/test
 ressources/training_data/train
+ressources/fullsize_test_images/pickle_files/fullsize_test.pkl
 
 *.weights
 
