@@ -1,3 +1,6 @@
+""" CascadeClassifier.py - Classe interne
+"""
+
 from ViolaJones import ViolaJones
 import pickle
 import os

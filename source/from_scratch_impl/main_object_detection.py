@@ -1,3 +1,7 @@
+""" main_object_detection.py - Interface
+Script utilisé pour entraîner et tester les classifieurs et cascades.
+"""
+
 """
 | Créé par Antoine Groudiev - 2022
 | - Implémentation des travaux de Paul Viola et Michael Jones

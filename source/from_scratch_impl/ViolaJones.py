@@ -1,3 +1,6 @@
+""" ViolaJones.py - Classe interne
+"""
+
 import pickle
 import numpy as np
 import copy

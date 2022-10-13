@@ -1,3 +1,7 @@
+""" image_pickler.py - Utilitaire externe
+Transforme des images en une liste contenant l'image sous forme de tableau et sa classification.
+"""
+
 import pickle
 import glob
 from utilitaires import read_image

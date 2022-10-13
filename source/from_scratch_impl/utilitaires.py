@@ -1,6 +1,6 @@
-'''
-    Fichier comprenant des fonctions directement utiles aux différents fichiers de l'algorithme.
-'''
+""" utilitaires.py - Utilitaires internes au projet
+Fichier comprenant des fonctions directement utiles aux différents fichiers de l'algorithme.
+"""
 
 import numpy as np # utilisation de numpy pour accéler les calculs
 import RectangleRegion

@@ -1,3 +1,6 @@
+""" WeakClassifier.py - Classe interne
+"""
+
 from utilitaires import evaluation
 
 class WeakClassifier:

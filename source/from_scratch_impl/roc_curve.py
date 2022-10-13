@@ -1,3 +1,7 @@
+""" roc_curve.py - Utilitaire
+Trace la courbe ROC d'un classifieur.
+"""
+
 import numpy as np
 import pickle
 import time

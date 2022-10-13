@@ -1,3 +1,6 @@
+""" RectangleRegion.py - Classe interne
+"""
+
 from numpy import int64
 
 class RectangleRegion:

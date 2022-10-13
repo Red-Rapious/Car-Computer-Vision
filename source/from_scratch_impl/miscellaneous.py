@@ -1,7 +1,7 @@
-'''
-    Fichier comprenant des fonctions annexes diverses, qui ne servent pas directement 
-    au fonctionnement de l'algorithme mais qui génèrent des images pour le diaporama.
-'''
+""" miscellaneous.py - Utilitaires externes
+Fichier comprenant des fonctions annexes diverses, qui ne servent pas directement 
+au fonctionnement de l'algorithme mais qui génèrent des images pour le diaporama.
+"""
 
 
 from ViolaJones import ViolaJones

@@ -1,3 +1,8 @@
+""" full_image_detection.py - Algorithme et interface
+Fonctions et environnement de test pour appliquer la cascade à une image de taille "standard",
+en analysant chaque sous-fenêtre de l'image.
+"""
+
 from CascadeClassifier import CascadeClassifier
 from utilitaires import read_image
 import numpy as np
