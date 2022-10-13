@@ -4,12 +4,12 @@ import time
 from random import shuffle, seed
 import matplotlib.pyplot as plt
 
-from ViolaJones import ViolaJones
 from CascadeClassifier import CascadeClassifier
 from utilitaires import AccuracyMethod, measure_accuracy
 from full_image_detection import apply_cascade_to_image
 
 FULLSIZE = True
+NB_IMAGES = 30
 
 # HYPERPARAMÈTRES
 OBJECT = "stop_sign_v2"
@@ -47,6 +47,7 @@ def load_fullsize_data():
 def test_fullsize_cascade(filename="Cascade"):
     data = load_fullsize_data()
     shuffle(data)
+    data = data[:min(NB_IMAGES, len(data))]
     clf = CascadeClassifier.load(SAVE_FOLDER + OBJECT + "_" + filename)
     evaluate(clf, data)
 
@@ -71,8 +72,11 @@ def evaluate(clf, data):
         else:
             tot_negatives += 1
 
+        if tot_positives + tot_negatives % 10 == 0:
+            print("    ", tot_positives + tot_negatives, "images traitées sur", len(data))
+
         start = time.time()
-        prediction = classify(x, clf)
+        prediction = classify(clf, x)
         classification_time += time.time() - start
         if prediction == 1 and y == 0:
             false_positives += 1
@@ -90,8 +94,8 @@ def evaluate(clf, data):
     fig, axes = plt.subplots(num="Courbe ROC")
 
     axes.plot([i+1 for i in range(len(curve))], curve)
-    plt.xticks(range(1, len(curve)+1))
-    plt.title("Courbe ROC")
+    plt.xticks(range(0, len(curve)+1, max(len(curve)//10, 1)))
+    plt.title("Courbe ROC - " + str(len(data)) + " images")
     plt.ylabel("Exactitude", fontweight="bold")
     plt.xlabel("Faux Positifs", fontweight="bold")
     axes.yaxis.set_view_interval(0, 1)
@@ -100,6 +104,9 @@ def evaluate(clf, data):
 if __name__ == "__main__":
     print("\n\n     --- [DEBUT DU PROGRAMME] ---\n")
 
-    test_cascade(CASCADE_NAME)
+    if FULLSIZE:
+        test_fullsize_cascade(CASCADE_NAME)
+    else:
+        test_cascade(CASCADE_NAME)
 
     print("\n       --- [FIN DU PROGRAMME] ---\n")

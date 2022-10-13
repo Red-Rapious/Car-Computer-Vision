@@ -7,7 +7,7 @@ import os
 import time
 import random
 
-REAL_TIME_MODE = True
+REAL_TIME_MODE = False
 RES_DOWNSCALE = 2.5 # diminue la taille de l'image pour accélérer le traitement
 SHOW_IMAGES = False
 
@@ -18,7 +18,7 @@ SHIFT_SCALE = 2
 MAX_FACTOR = 8
 MIN_FACTOR = 5
 
-FIRST_DETECT_ONLY = False # la valeur False multiplie le temps de détection par 10 en moyenne
+FIRST_DETECT_ONLY = True # la valeur False multiplie le temps de détection par 10 en moyenne
 
 def apply_cascade_to_image(cascade: CascadeClassifier, image, printing=False, name="") -> list:
     subwindows_nb = 0
