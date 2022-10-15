@@ -1,0 +1,84 @@
+\documentclass[12pt,a4paper]{article} 
+
+\usepackage[a4paper,margin=2cm]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{pslatex}
+\usepackage[utf8]{inputenc}
+\usepackage[greek,french]{babel} 
+\usepackage{graphicx} 
+\usepackage{amsmath} 
+\setlength{\unitlength}{1mm}
+\usepackage{enumitem}
+\usepackage{cancel}
+\usepackage{amssymb} % pour les ensembles NN
+\usepackage{mathrsfs} % pour les hypothèses de récurrences \PP
+\usepackage{fancyhdr}
+\usepackage[boldLipsian,10pt,GlyphNames]{teubner}
+\usepackage{fancybox}
+\usepackage{multicol}
+
+\lhead{Antoine Groudiev}
+\chead{}
+\rhead{MP*, Charlemange}
+
+\lfoot{\jobname.tex}
+\cfoot{Compte-rendu}
+\rfoot{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0.4pt}
+
+\author{Antoine Groudiev}
+\title{\textit{Compte-rendu de l'avancée du TIPE :} \\ Vision par ordinateur appliquée aux véhicules autonomes}
+\date{\today} 
+
+\begin{document}
+\maketitle
+
+\section*{Introduction : Définition des objectifs et contraintes}
+\textbf{Présentation des objectifs généraux du projet :} création en binôme d'un véhicule autonome capable de se déplacer dans son environnement, en utilisant une caméra pour détecter les obstacles et les éviter. Mon apport précis au projet consiste au développement d'un algorithme de vision par ordinateur permettant de détecter des panneaux de signalisation routière à partir du flux vidéo de la caméra. \\
+
+\textbf{Difficulté principale :} trouver un équilibre entre vitesse de détection et précision de détection. En effet, il est nécessaire de détecter les panneaux de signalisation le plus rapidement possible, afin de pouvoir réagir en conséquence. Cependant, il est également nécessaire de détecter les panneaux de signalisation avec une précision suffisante, afin de ne pas se tromper de panneau. \\
+
+\textbf{Graphe} réalisé par mes soins des performances de l'ordinateur embarqué utilisé (Rapsberry Pi).
+
+\section{Haut niveau : utilisation de bibliothèques}
+Dans une première partie, j'ai implémenté aisément deux algorithmes à l'aide de bibliothèques existantes, pour choisir celui qui me paraissait le plus adapté à mon problème.
+
+\subsection{Algorithme de Viola-Jones}
+Brève présentation et implémentation de l'algorithme de Viola et Jones ; mesure et interprétation des performances.
+
+\subsection{Algorithme YOLO}
+Brève présentation et implémentation de l'algorithme YOLO ; mesure et interprétation des performances. \\
+
+Comparaison et choix du meilleur algorithme.
+
+\subsection{Calcul de la distance caméra-objet}
+Aparté rapide sur la méthode d'estimation de la distance entre la caméra et un panneau, en utilisant la notion de focale de la caméra.
+
+
+\section{Bas niveau : implémentation  personnelle de l’algorithme de Viola-Jones}
+Seconde partie visant à implémenter de zéro l'algorithme de Viola-Jones. \\
+
+\subsection{Implémentation et explication approfondie de Viola-Jones}
+Explication approfondie de l'algorithme de Viola-Jones, avec des exemples de code Python de mon implémentation. Tout au long des explications, diverses illustrations imagent les différentes étapes de l'algorithme. L'implémentation dans son ensemble s'appuie sur un article fondateur publié par Viola et Jones en 2001, résumant leurs travaux.\\
+
+\subsection{Traitement des images d’entraînement}
+Explication rapide du choix des images utilisées pour entraîner l'algorithme : recherche d'images sur Internet, traitement des images par un script Python, etc. \\
+
+Explications du processus d'entraînement de l'algorithme en pratique, prenant plusieurs heures d'exécution, ainsi que des méthodes utilisées pour stocker les classificateurs une fois entraînés.
+
+\subsection{Tests et résultats}
+Après une remarque sur les méthodes d'estimation de la précision et de l'exactitude de l'algorithme, des graphes et tableaux affichant les résultats de l'algorithme précédemment implémenté. Comparaison aux valeurs annoncées dans l'article original de Viola et Jones.
+
+\section{Conclusion}
+Conclusion générale sur le projet, et sur les résultats obtenus. Interrogation sur la possibilité pratique d'utiliser cette implémentation, très lente, notamment à cause de l'utilisation du langage haut niveau Python.
+
+\section*{Annexes}
+\begin{enumerate}
+    \item Code source complet de l'algorithme de Viola-Jones
+    \item Divers scripts de \textit{benchmark}, utilitaires, de \textit{data processing} etc.
+    \item Démonstration rigoureuse de la distance caméra-objet
+    \item Démonstration du temps de réponse maximal de l'algorithme pour respecter le cahier des charges
+\end{enumerate}
+
+\end{document}
