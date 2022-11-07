@@ -247,7 +247,7 @@ class ViolaJones:
             total += alpha * clf.classify(ii)
         
         # TODO: RETABLIR LA VALEUR INITIALE DE 0.5
-        return total >= 0.85 * sum(self.alphas)
+        return total >= 0.5 * sum(self.alphas)
 
     def save(self, filename:str) -> None:
         """ Utilise le module Pickle pour sauvegarder le modèle entraîné"""

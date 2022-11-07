@@ -12,8 +12,8 @@ from CascadeClassifier import CascadeClassifier
 from utilitaires import AccuracyMethod, measure_accuracy
 from full_image_detection import apply_cascade_to_image
 
-FULLSIZE = True
-NB_IMAGES = 30
+FULLSIZE = False
+NB_IMAGES = 300
 
 # HYPERPARAMÈTRES
 OBJECT = "stop_sign_v2"
@@ -36,12 +36,13 @@ def load_test_data():
         test = pickle.load(f)
     return test
 
-def test_cascade(filename="Cascade"):
+def test_standard_cascade(filename="Cascade"):
     test = load_test_data()
-    train = load_training_data()
-    data = test + train
+    #train = load_training_data()
+    data = test #+ train
     clf = CascadeClassifier.load(SAVE_FOLDER + OBJECT + "_" + filename)
-    evaluate(clf, data)
+    curve = compute_curve(clf, data)
+    plot_roc(curve, len(data))
 
 def load_fullsize_data():
     with open("././ressources/fullsize_test_images/pickle_files/fullsize_test.pkl", 'rb') as f:
@@ -53,7 +54,8 @@ def test_fullsize_cascade(filename="Cascade"):
     shuffle(data)
     data = data[:min(NB_IMAGES, len(data))]
     clf = CascadeClassifier.load(SAVE_FOLDER + OBJECT + "_" + filename)
-    evaluate(clf, data)
+    curve = compute_curve(clf, data)
+    plot_roc(curve, len(data))
 
 def classify(x, clf):
     if FULLSIZE:
@@ -61,7 +63,7 @@ def classify(x, clf):
     else:
         return clf.classify(x)
 
-def evaluate(clf, data):
+def compute_curve(clf, data):
     correct = 0
     tot_negatives, tot_positives = 0, 0
     true_negatives, false_negatives = 0, 0
@@ -80,7 +82,7 @@ def evaluate(clf, data):
             print("    ", tot_positives + tot_negatives, "images traitées sur", len(data))
 
         start = time.time()
-        prediction = classify(clf, x)
+        prediction = classify(x, clf)
         classification_time += time.time() - start
         if prediction == 1 and y == 0:
             false_positives += 1
@@ -93,16 +95,19 @@ def evaluate(clf, data):
             true_positives += 1
         
         correct += 1 if prediction == y else 0
-    
+
+    return curve
+
+def plot_roc(curve: list, len_data: int):
     #fig, axes = plt.subplots(figsize =(7, 5), num="Courbe ROC")
     fig, axes = plt.subplots(num="Courbe ROC")
 
     axes.plot([i+1 for i in range(len(curve))], curve)
     plt.xticks(range(0, len(curve)+1, max(len(curve)//10, 1)))
-    plt.title("Courbe ROC - " + str(len(data)) + " images")
+    plt.title("Courbe ROC - " + str(len_data) + " images")
     plt.ylabel("Exactitude", fontweight="bold")
     plt.xlabel("Faux Positifs", fontweight="bold")
-    axes.yaxis.set_view_interval(0, 1)
+    axes.yaxis.set_view_interval(0.65, 1)
     plt.show()
 
 if __name__ == "__main__":
@@ -111,6 +116,6 @@ if __name__ == "__main__":
     if FULLSIZE:
         test_fullsize_cascade(CASCADE_NAME)
     else:
-        test_cascade(CASCADE_NAME)
+        test_standard_cascade(CASCADE_NAME)
 
     print("\n       --- [FIN DU PROGRAMME] ---\n")

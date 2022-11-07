@@ -12,7 +12,7 @@ import os
 import time
 import random
 
-REAL_TIME_MODE = False
+REAL_TIME_MODE = True
 RES_DOWNSCALE = 2.5 # diminue la taille de l'image pour accélérer le traitement
 SHOW_IMAGES = False
 
