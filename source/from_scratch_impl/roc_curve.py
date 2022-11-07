@@ -102,7 +102,7 @@ def plot_roc(curve: list, len_data: int):
     #fig, axes = plt.subplots(figsize =(7, 5), num="Courbe ROC")
     fig, axes = plt.subplots(num="Courbe ROC")
 
-    axes.plot([i+1 for i in range(len(curve))], curve)
+    axes.plot([i for i in range(1, len(curve) + 1)], curve)
     plt.xticks(range(0, len(curve)+1, max(len(curve)//10, 1)))
     plt.title("Courbe ROC - " + str(len_data) + " images")
     plt.ylabel("Exactitude", fontweight="bold")

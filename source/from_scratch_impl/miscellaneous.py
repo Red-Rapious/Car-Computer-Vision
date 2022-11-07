@@ -13,6 +13,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import cv2
 import pandas
+import glob
+
 
 def features_count_graph(start: int, stop: int, step: int, ratio: float=16/9, show_special_point: bool=False, special_point: int=19) -> None:
     """ Trace le nombre de features possibles contenues
@@ -80,8 +82,8 @@ def draw_random_classifier_on_video() -> None:
         if key == 27:
             break
 
-def show_integral_image_process(filepath:str = "ressources/training_images/faces_images/train/face/face00324.pgm") -> None:
-    image = np.array(read_image(filepath), dtype=np.uint8)
+def show_integral_image_process(file_path:str = "ressources/training_images/faces_images/train/face/face00324.pgm") -> None:
+    image = np.array(read_image(file_path), dtype=np.uint8)
     gray_image = cv2.cvtColor(image, cv2.COLOR_GRAY2BGR)
 
     cv2.imshow("Image en nuances de gris", cv2.resize(image, (0, 0), fx=30, fy=30, interpolation=cv2.INTER_NEAREST))
@@ -92,7 +94,35 @@ def draw_main_classifiers_on_image(image: list, classifiers: list) -> None:
     for classifier in classifiers:
         draw_weakclassifier_on_image(image, classifier)
 
+def display_data_sample_table(folder_path: str, nb_images_side: tuple, resolution: tuple):
+    folder = glob.glob(folder_path)
+
+    data = []
+    for image_path in folder:
+        data.append(read_image(image_path))
+        if len(data) >= nb_images_side[0] * nb_images_side[1]:
+            break
+
+    full_image_table = [[0 for _ in range(nb_images_side[0] * resolution[0])] for _ in range(nb_images_side[1] * resolution[1])]
+    
+    for i in range(nb_images_side[0]):
+        for j in range(nb_images_side[1]):
+            if i * nb_images_side[1] + j >= len(data):
+                print("Pas assez d'images")
+                break
+            image = data[i * nb_images_side[1] + j]
+            for x in range(len(image)):
+                for y in range(len(image[0])):
+                    full_image_table[j*resolution[1] + y][i*resolution[0] + x] = image[y][x]
+
+    full_image_table = np.array(full_image_table)
+    full_image_table = cv2.resize(full_image_table, (0, 0), fx=2.5, fy=2.5, interpolation=cv2.INTER_NEAREST)
+    cv2.imshow("Training images", full_image_table)
+    cv2.waitKey(0)
+
+
 if __name__ == "__main__":
+    '''
     clf = ViolaJones.load("/Users/antoinegroudiev/Documents/Code/Car-Computer-Vision/source/from_scratch_impl/saves/stop_sign_v2_cascade_1_5_10/sub_stop_sign_v2_10")
 
     image = cv2.cvtColor(np.array(read_image("ressources/training_images/stop_sign_images/stop_signs_images_processed/train/stop_sign_train_44.pgm"), dtype=np.uint8), cv2.COLOR_GRAY2BGR)
@@ -105,3 +135,6 @@ if __name__ == "__main__":
     cv2.destroyAllWindows()
 
     show_integral_image_process("ressources/training_images/stop_sign_images/stop_signs_images_processed/train/stop_sign_train_44.pgm")
+    '''
+
+    display_data_sample_table("/Users/antoinegroudiev/Documents/Code/Car-Computer-Vision/ressources/training_images/stop_sign_v2_images/stop_sign_v2_images_processed/train/*", (16, 16), (19, 19))
