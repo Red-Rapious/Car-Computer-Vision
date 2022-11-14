@@ -11,6 +11,10 @@ import glob
 import os
 import time
 import random
+import sys
+
+sys.path.append('/Users/antoinegroudiev/Documents/Code/Car-Computer-Vision/source/opencv_impl')
+from realtime_utilitaires import encadrer_objet, calculer_distance
 
 REAL_TIME_MODE = True
 RES_DOWNSCALE = 2.5 # diminue la taille de l'image pour accélérer le traitement
@@ -67,12 +71,14 @@ def apply_cascade_to_image(cascade: CascadeClassifier, image, printing=False, na
         print("     Analysed subwindows:", subwindows_nb)
     return boxes
 
-def encadrer_objet(x: int, y: int, width: int, height: int, image, texte: str = "", couleur=(0,255,0)):
-    """ Fonction encadrant d'un carré vert un objet dans une image, qui a été précédement détecté """
-    cv2.rectangle(image, (x,y), (x+width,y+height), couleur, 2)
-    if texte != "":
-        global_size = (width+height)/2 # facteur global indiquant la taille de l'image
-        cv2.putText(image, texte, (x+int(global_size/5.5),y-int(global_size/20)), cv2.FONT_HERSHEY_DUPLEX, global_size/340, couleur, 2, cv2.LINE_AA)
+
+# def encadrer_objet(x: int, y: int, width: int, height: int, image, texte: str = "", couleur=(0,255,0)):
+#     """ Fonction encadrant d'un carré vert un objet dans une image, qui a été précédement détecté """
+#     cv2.rectangle(image, (x,y), (x+width,y+height), couleur, 2)
+#     if texte != "":
+#         global_size = (width+height)/2 # facteur global indiquant la taille de l'image
+#         cv2.putText(image, texte, (x+int(global_size/5.5),y-int(global_size/20)), cv2.FONT_HERSHEY_DUPLEX, global_size/340, couleur, 2, cv2.LINE_AA)
+
 
 if __name__ == "__main__":
     if REAL_TIME_MODE:
@@ -113,6 +119,7 @@ if __name__ == "__main__":
             moyenne_boxes = (moyenne_boxes * nb_frames + len(boxes)) / (nb_frames + 1)
             for box in boxes:
                 encadrer_objet(box[0], box[1], box[2], box[3], image, "", box[4])
+                dist = calculer_distance(box[2])
 
             
             image = np.array(cv2.resize(image, (0, 0), fx=RES_DOWNSCALE, fy=RES_DOWNSCALE, interpolation=cv2.INTER_NEAREST))

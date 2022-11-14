@@ -7,7 +7,7 @@ def encadrer_objet(x: int, y: int, width: int, height: int, image, texte: str, c
    cv2.putText(image, texte, (x+int(global_size/5.5),y-int(global_size/20)), cv2.FONT_HERSHEY_DUPLEX, global_size/340, couleur, 2, cv2.LINE_AA)
 
    distance = calculer_distance(width)
-   cv2.putText(image, f'distance : {round(distance, 2)} m', (x+int(global_size/5.5),y-int(global_size/20) - 20), cv2.FONT_HERSHEY_DUPLEX, 0.6, (0, 0, 255))
+   cv2.putText(image, f'distance : {round(distance, 2)} m', (x+int(global_size/6),y+height+int(global_size/10) - 20), cv2.FONT_HERSHEY_DUPLEX, global_size/340, (0, 0, 255))
 
 def calculer_distance(width: int):
    """ Fonction calculant la distance entre la caméra et l'objet à détecter """

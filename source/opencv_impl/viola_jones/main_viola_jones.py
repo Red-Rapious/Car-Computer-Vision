@@ -1,7 +1,7 @@
 import cv2
 import sys
 sys.path.append("/Users/antoinegroudiev/Documents/Code/Car-Computer-Vision/source/opencv_impl")
-from utilitaires import encadrer_objet
+from realtime_utilitaires import encadrer_objet
 import time
 
 REAL_TIME_MODE = True
