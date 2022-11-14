@@ -4,7 +4,7 @@ from object_detector import ObjectDetector
 import time
 import sys
 sys.path.insert(0, '/Users/antoinegroudiev/Documents/Code/Car-Computer-Vision/source/opencv_impl/')
-from utilitaires import encadrer_objet
+from realtime_utilitaires import encadrer_objet
 
 REAL_TIME_MODE = True
 SHOW_FPS, SHOW_FRAME, SHOW_RECTANGLES = True, True, True

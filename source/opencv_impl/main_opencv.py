@@ -2,12 +2,12 @@ import cv2
 import sys
 sys.path.insert(0, '/Users/antoinegroudiev/Documents/Code/Car-Computer-Vision/source/opencv_impl/yolo')
 from object_detector import ObjectDetector
-from utilitaires import encadrer_objet
+from realtime_utilitaires import encadrer_objet
 import time
 
 REAL_TIME_MODE = True
 SHOW_FPS, SHOW_FRAME, SHOW_RECTANGLES = True, True, True
-YOLO, VIOLA = True, True
+YOLO, VIOLA = False, True
 
 # Ouverture de la caméra
 capture = None
@@ -24,7 +24,8 @@ if not capture.isOpened():
 visages_cascade_classifier = cv2.CascadeClassifier("ressources/classificateurs/Visage_classificateur.xml")
 
 # Importation des fichiers YOLO
-vd = ObjectDetector("/Users/antoinegroudiev/Documents/Code/Car-Computer-Vision/source/opencv_impl/yolo/dnn_model/face_yolov3.weights", "/Users/antoinegroudiev/Documents/Code/Car-Computer-Vision/source/opencv_impl/yolo/dnn_model/face_yolov3.cfg", None, 1/255)
+if YOLO:
+    vd = ObjectDetector("/Users/antoinegroudiev/Documents/Code/Car-Computer-Vision/source/opencv_impl/yolo/dnn_model/face_yolov3.weights", "/Users/antoinegroudiev/Documents/Code/Car-Computer-Vision/source/opencv_impl/yolo/dnn_model/face_yolov3.cfg", None, 1/255)
 
 frame_precendente = time.time()
 # Boucle de détection d'image dans la caméra
