@@ -1,0 +1,103 @@
+\documentclass[12pt,a4paper]{article} 
+
+\usepackage[a4paper,margin=2cm]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{pslatex}
+\usepackage[utf8]{inputenc}
+\usepackage[greek,french]{babel} 
+\usepackage{graphicx} 
+\usepackage{amsmath} 
+\setlength{\unitlength}{1mm}
+\usepackage{enumitem}
+\usepackage{cancel}
+\usepackage{amssymb} % pour les ensembles NN
+\usepackage{mathrsfs} % pour les hypothèses de récurrences \PP
+\usepackage{fancyhdr}
+\usepackage[boldLipsian,10pt,GlyphNames]{teubner}
+\usepackage{fancybox}
+\usepackage{hyperref}
+
+\lhead{Antoine Groudiev}
+\chead{}
+\rhead{MP*, Charlemange}
+
+\rfoot{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0.4pt}
+
+\author{Antoine Groudiev}
+\title{\textit{Présentation orale du TIPE :} \\ Vision par ordinateur appliquée aux véhicules autonomes}
+\date{\today} 
+
+\begin{document}
+\maketitle
+
+
+
+\section*{Introduction : Définition des objectifs et contraintes}
+    Bonjour, je vais vous présenter mon travail d'initiative personnelle encadré, sur le thème de la ville. La ville est par nature un lieu de transport ; et l'on s'imagine souvent les transports du futur comme autonomes, c'est à dire capables d'interagir avec leur environnement sans action de l'utilisateur. \\
+
+    Avec mon collègue Mathieu Spiegel, nous avons donc entrepris de modéliser un véhicule autonome à échelle réduite, pour étudier la faisabilité d'une telle innovation. \\
+
+    Le robot est notamment équipé d'un Raspberry Pi, un micro-ordinateur, de moteurs et d'une caméra. \\
+
+    Le projet a été séparé un deux parties distinctes mais complémentaires : une partie de construction, mécanique et électronique du robot, par mon camarade ; et une partie logicielle, axée sur l'implémentation de vision par ordinateur. \\
+
+    La vision par ordinateur vise à traiter un flux vidéo pour en extraire des informations utiles, comme la présence ou non d'un panneau stop, afin de pouvoir agir un conséquence. \\
+
+    Après avoir défini les objectifs et contraintes, j'ai comparé deux algorithmes à l'aide d'une bibliothèque externe, puis j'ai implémenté de zéro l'algorithme de Viola et Jones.
+
+\section{Haut niveau : utilisation de bibliothèques}
+
+    Deux contraintes sont décisives dans ce projet : la première, celle d'exactitude, nécessite de ne pas omettre d'objets à détecter, pour être sûr de s'arrêter à une intersection par exemple. La seconde, celle de l'efficaité, est notamment liée à la nature embarquée du processeur. \\
+
+    On voit en effet sur ce graphe que j'ai réalisé que la Rapsberry Pi est beaucoup plus lente que de nombreux ordinateurs modernes, nécessitant donc des algorithmes efficaces. \\
+
+    La problématique au coeur de mon travail a donc été de réussir à allier précision et efficacité de la détection d'objet dans une image. \\
+
+    J'ai commencé par comparer deux algorithmes de vision par ordinateur à l'aide de 
+
+
+\subsection{Algorithme de Viola-Jones}
+
+
+\subsection{Algorithme YOLO}
+
+
+\subsection{Calcul de la distance caméra-objet}
+
+
+
+\section{Bas niveau : implémentation  personnelle de l’algorithme de Viola-Jones}
+
+
+\subsection{Implémentation et explication approfondie de Viola-Jones}
+
+
+\subsection{Traitement des images d’entraînement}
+
+
+\subsection{Tests et résultats}
+
+
+\section{Conclusion}
+
+
+\begin{thebibliography}{9}
+    \bibitem{}Paul Viola, Michael Jones, Rapid Object \textit{Detection using a Boosted Cascade of Simple Features}, Conference on Computer Vision, (2001)
+    \bibitem{}Anmol Parande, \textit{Understanding and Implementing the Viola-Jones Image Classification Algorithm}, Medium, DataDrivenInvestors, (2019)
+    \bibitem{}David Garbage, \textit{Finding distance from camera to object of known size}, StackOverflow, (2011)
+    %\bibitem{}Computerphile, \textit{Detecting Faces (Viola Jones Algorithm)}, Computerphile - YouTube
+    %\bibitem{}Hmrishav Bandyopadhyay, \textit{YOLO: Real-Time Object Detection Explained}, \url{v7labs.com/blog/yolo-object-detection}
+
+\end{thebibliography}
+
+\section*{Annexes}
+\begin{itemize}
+    \item Code source complet de mon implémentation de l'algorithme de Viola-Jones
+    \item Divers scripts de \textit{benchmark}, utilitaires, de \textit{data processing}, etc.
+    \item Démonstration rigoureuse de la distance caméra-objet
+    %\item Démonstration du temps de réponse maximal de l'algorithme pour respecter le cahier des charges
+\end{itemize}
+
+\end{document}
