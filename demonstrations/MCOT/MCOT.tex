@@ -1,0 +1,90 @@
+\documentclass[12pt,a4paper]{article} 
+
+\usepackage[margin=1.3cm]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{pslatex}
+\usepackage[utf8]{inputenc}
+\usepackage[french]{babel} 
+\usepackage{graphicx} 
+\usepackage{amsmath} 
+\setlength{\unitlength}{1mm}
+\usepackage{enumitem}
+\usepackage{cancel}
+\usepackage{fancyhdr}
+\usepackage{fancybox}
+\usepackage{hyperref}
+\usepackage{array}
+\usepackage{titling}
+
+\setlength{\droptitle}{-1.2cm}
+\predate{}
+\postdate{}
+
+\rfoot{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0.4pt}
+
+\author{Antoine Groudiev}
+\title{\textit{Mise en Cohérence des Objectifs du TIPE :}\\Vision par ordinateur appliquée à la détection de panneaux}
+\date{} 
+
+\begin{document}
+\maketitle
+
+\section{Titre de votre sujet TIPE (20 mots)}
+\begin{center}
+    \vskip-0.2cm
+    \large \textit{Vision par ordinateur appliquée à la détection de panneaux}
+\end{center}
+
+\section{Quelle est votre motivation pour le choix du sujet ? (50 mots)}
+La vision par ordinateur est une problématique centrale dans la construction d’un véhicule autonome. Véritable lien entre le monde extérieur et l’ordinateur, la détection d’objet permet à une voiture sans conducteur de se situer dans son environnement direct. 
+
+\section{En quoi votre étude s'inscrit-elle dans le thème de l'année ? (50 mots)}
+La prédiction de l’évolution future des villes est impossible sans analyser le développement des véhicules autonomes, qui définiront peut-être les moyens de transport de demain. L’étude du domaine de la vision par ordinateur permet ainsi de s’intéresser à une problématique décisive de l’avenir de la ville.
+
+\section{Bibliographie commentée (650 mots)}
+La vision par ordinateur est la branche de l’informatique visant à permettre à un ordinateur de transformer une image, sous la forme d’un tableau de nombres, en informations permettant des décisions. \cite{ibm} \\
+Les applications de ce domaine d’étude sont nombreuses et déjà présentes de nos jours, entre autres pour l’imagerie médicale, la détection faciale et la reconnaissance de l’écriture. \cite{ibm}\cite{szeliski} Une application notable en lien avec la ville est de développement des véhicules autonomes, qui dépendent de la vision par ordinateur pour détecter les autres voitures, les panneaux, les piétons et potentiels obstacles à éviter. \cite{ibm} \\
+La détection d’objet est par essence une discipline difficile, à cause de deux contraintes opposées. À cause de l’immense quantité d’information reçue, le traitement d’une image est un processus très long. Cependant, l’analyse d’un flux vidéo en temps réel nécessite une fréquence de rafraichissement élevée, pour pouvoir, dans le cas d’un panneau par exemple, freiner à temps. Couplé à l’importance d’une détection juste, pour ne pas freiner brusquement en cas de fausse alerte, la détection de panneaux requiert donc des algorithmes efficaces et précis, sans marge d’erreur. \\
+L’algorithme le plus célèbre \cite{szeliski} de détection de visages est celui développé par Paul Viola et Michael Jones \cite{viola-jones} en 2001. Il présente deux idées novatrices pour accélérer la vitesse de détection, les concepts d’image intégrale et de boosting\cite{computerphile}. Il est ainsi théoriquement possible d’implémenter une telle méthode, puis d’entraîner le modèle avec un jeu d’images bien choisi, pour être capable de détecter n’importe quel objet dans une image, en alliant vitesse et précision. La même méthode peut être ainsi appliquée à la détection de panneaux, s'incrivant dans notre problématique. \\
+Si le fonctionnement théorique de l’algorithme est décrit dans le papier original de Viola et Jones \cite{viola-jones}, son implémentation en pratique n’est pas développée ; la lecture de d’autres articles \cite{wang}\cite{parande} permet de mieux appréhender la démarche concrète d’implémentation. \\
+L’implémentation de l’algorithme est suivie de la question de son entraînement : le programme, pour fonctionner, nécessite une phase d’apprentissage de plusieurs heures. Des milliers d’images, dites positives, de l’objet à détecter, ainsi que négatives, ne comprenant pas l’objet à détecter, doivent être fournies à l’algorithme pour que ce dernier apprenne à reconnaître l’objet en question. Il faut ainsi récupérer, recadrer, trier à la main, ajuster l’éclairage des images \cite{viola-jones}\cite{wang} pour garantir le bon fonctionnement du programme, ce qui constitue une longue et importante étape de la construction du détecteur. \\
+Enfin, la dernière phase de la démarche scientifique de la création d’un tel outil est une étape de tests, visant à déterminer l’exactitude de l’algorithme, à l’aide de méthodes de calcul propres à l’apprentissage automatique \cite{powers}.
+
+
+
+\section{Problématique retenue (50 mots)}
+La problématique de mon travail est d’implémenter, entraîner, et tester un algorithme de vision par ordinateur, capable de détecter un panneau STOP dans une vidéo en respectant des contraintes de vitesse et d’exactitude.
+
+\section{Objectifs du TIPE (100 mots)}
+\begin{enumerate}
+\item Implémentation en Python de la méthode de Viola et Jones
+\item Constitution d’un jeu d’images d’entraînement, pré-traitement de ces données, et entraînement de l’algorithme
+\item Application du programme à un flux vidéo, mesure de l’exactitude de l’algorithme et confrontation aux contraintes réelles
+\end{enumerate}
+
+
+\section{Mots clés (5 mots-clés, français \& anglais)}
+\begin{tabular}{|>{\centering\arraybackslash}m{3cm}|>{\centering\arraybackslash}m{3cm}|>{\centering\arraybackslash}m{3cm}|>{\centering\arraybackslash}m{3cm}|>{\centering\arraybackslash}m{3cm}|}
+\hline
+Vision par ordinateur & Apprentissage automatique & Intelligence artificielle & Pré-traitement d’images &Classification supervisée \\
+\hline
+Computer vision & Automatic learning & Artificial Intelligence & Image pre-processing & Supervised classification \\
+\hline
+\end{tabular}
+
+\begin{thebibliography}{9}
+    
+    \bibitem{ibm}IBM, \textit{What is computer vision?}, \url{https://www.ibm.com/topics/computer-vision}
+    \bibitem{szeliski}Richard Szeliski, \textit{Computer Vision: Algorithms and Applications, 2nd ed. (2022)}, \url{https://szeliski.org/Book/}
+    \bibitem{viola-jones}Paul Viola, Michael Jones, \textit{Rapid Object Detection using a Boosted Cascade of Simple Features}, Conference on Computer Vision and Pattern Recognition, \url{https://www.cs.cmu.edu/~efros/courses/LBMV07/Papers/viola-cvpr-01.pdf}
+    \bibitem{computerphile}Michael Pound, Sean Riley, Computerphile, \textit{Detecting Faces (Viola Jones Algorithm)}, \url{https://www.youtube.com/watch?v=uEJ71VlUmMQ&t=15s}
+    \bibitem{wang}Yi-Qing Wang, \textit{An Analysis of the Viola-Jones Face Detection Algorithm}, IPOL, \url{https://www.ipol.im/pub/art/2014/104/?utm_source=doi}
+    \bibitem{parande}Anmol Parande, \textit{Understanding and Implementing the Viola-Jones Image Classification Algorithm}, Medium, DataDrivenInvestors, \url{https://medium.datadriveninvestor.com/understanding-and-implementing-the-viola-jones-image-classification-algorithm-85621f7fe20b}
+    \bibitem{powers}David M W Powers, \textit{Evaluation: From Precision, Recall and F-Measure to ROC, Informedness, Markedness \& Correlation}, Journal of Machine Learning Technologies,  \url{https://web.archive.org/web/20191114213255/https://www.flinders.edu.au/science_engineering/fms/School-CSEM/publications/tech_reps-research_artfcts/TRRA_2007.pdf}
+
+
+\end{thebibliography}
+
+\end{document}
