@@ -1,3 +1,9 @@
 {
-    "git.ignoreLimitWarning": true
+    "git.ignoreLimitWarning": true,
+    "python.autoComplete.extraPaths": [
+        "./source/opencv_impl", "./source/opencv_impl/yolo"
+    ],
+    "python.analysis.extraPaths": [
+        "./source/opencv_impl", "./source/opencv_impl/yolo"
+    ]
 }

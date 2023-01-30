@@ -15,6 +15,8 @@ from full_image_detection import apply_cascade_to_image
 FULLSIZE = False
 NB_IMAGES = 300
 
+UPDATE_STEP = 100
+
 # HYPERPARAMÈTRES
 OBJECT = "stop_sign_v2"
 CASCADE_NAME = "cascade_1_5_10"
@@ -59,7 +61,7 @@ def test_fullsize_cascade(filename="Cascade"):
 
 def classify(x, clf):
     if FULLSIZE:
-        return len(apply_cascade_to_image(x, clf)) > 0
+        return len(apply_cascade_to_image(clf, x)) > 0
     else:
         return clf.classify(x)
 
@@ -78,7 +80,7 @@ def compute_curve(clf, data):
         else:
             tot_negatives += 1
 
-        if tot_positives + tot_negatives % 10 == 0:
+        if (tot_positives + tot_negatives) % UPDATE_STEP == 0:
             print("    ", tot_positives + tot_negatives, "images traitées sur", len(data))
 
         start = time.time()

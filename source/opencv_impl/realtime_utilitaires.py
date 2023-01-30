@@ -18,5 +18,5 @@ def calculer_distance(width: int):
    detected_object_width = 8
    
    focal = (screen_width * ref_dist) / real_width
-   distance = ((detected_object_width * focal)/width)*10**-2  # distance en mètres du panneau
+   distance = ((detected_object_width * focal)/width)*(10**-2)  # distance en mètres du panneau
    return distance

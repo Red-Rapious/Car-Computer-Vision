@@ -7,7 +7,7 @@ import time
 
 REAL_TIME_MODE = True
 SHOW_FPS, SHOW_FRAME, SHOW_RECTANGLES = True, True, True
-YOLO, VIOLA = False, True
+YOLO, VIOLA = True, True
 
 # Ouverture de la caméra
 capture = None
@@ -49,6 +49,8 @@ while True:
         if SHOW_RECTANGLES:
             for (x,y,width,height) in visages:
                 encadrer_objet(x, y, width, height, image, "Viola-Jones", (0,0,255))
+            #for (x,y,width,height) in panneaux_stop:
+            #    encadrer_objet(x, y, width, height, image, "Panneau stop", (255,0,0))
 
     # YOLO
     if YOLO:

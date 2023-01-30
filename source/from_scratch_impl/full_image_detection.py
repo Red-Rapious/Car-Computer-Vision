@@ -82,7 +82,7 @@ def apply_cascade_to_image(cascade: CascadeClassifier, image, printing=False, na
 
 if __name__ == "__main__":
     if REAL_TIME_MODE:
-        cascade_name = "stop_sign_v2_cascade_1_5"
+        cascade_name = "face_cascade_1_5_10_25_50_75_100"
         cascade = CascadeClassifier.load("/Users/antoinegroudiev/Documents/Code/Car-Computer-Vision/source/from_scratch_impl/saves/" + cascade_name)
         capture = cv2.VideoCapture(0)
         if not capture.isOpened():

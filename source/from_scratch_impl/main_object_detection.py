@@ -20,8 +20,8 @@ from utilitaires import AccuracyMethod, measure_accuracy
 
 # HYPERPARAMÈTRES
 T = 5 # nombre de classificateurs faibles en cas de modèle seul
-OBJECT = "stop_sign_v2"
-CASCADE_NAME = "cascade_1_5_10"
+OBJECT = "face"
+CASCADE_NAME = "cascade_1_5_10_25_50_75_100"
 CASCADE_LAYERS = [1, 5, 10, 25, 50, 75, 100]
 
 # DEBUG
