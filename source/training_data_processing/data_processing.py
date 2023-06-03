@@ -4,13 +4,19 @@ import os
 import random
 
 UNPROCESSED_FOLDER = "/Users/antoinegroudiev/Documents/Code/Car-Computer-Vision/ressources/training_images/stop_sign_v2_images/stop_sign_v2_images_unprocessed/"
-PROCESSED_FOLDER = "/Users/antoinegroudiev/Documents/Code/Car-Computer-Vision/ressources/training_images/stop_sign_v2_images/stop_sign_v2_images_processed/"
+PROCESSED_FOLDER = "/Users/antoinegroudiev/Documents/Code/Car-Computer-Vision/ressources/training_images/stop_sign_v2_images/test_variance_stop_sign_v2_images_processed/"
+
+def normalise_pixel(pixel, std):
+    return int(pixel / std)
 
 def format_image(image_path: str):
     image = cv2.imread(image_path, cv2.IMREAD_COLOR)
     if image is not None:
         image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
         image = cv2.resize(image, (19, 19), interpolation = cv2.INTER_LINEAR)
+        #for i in range(len(image)):
+        #    for j in range(len(image[i])):
+        #        image[i][j] = normalise_pixel(image[i][j], 10)
         return image
     else:
         print("[ERREUR] L'image '" + image_path + "' n'a pas pu être lue...")
@@ -24,7 +30,7 @@ def save_image(image, image_name: str, type="train"):
 def process_and_separate_folder(test_ratio=0.2):
     i=0
     for _, _, files in os.walk(UNPROCESSED_FOLDER):
-        j = int(test_ratio * len(files))
+        nb_test = int(test_ratio * len(files))
         random.shuffle(files)
         for file in files:
             if len(file) != 0 and file[0] != ".":

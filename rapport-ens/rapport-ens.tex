@@ -1,0 +1,67 @@
+\documentclass[12pt,a4paper]{article} 
+
+\usepackage[margin=1.3cm]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{pslatex}
+\usepackage[utf8]{inputenc}
+\usepackage[french]{babel} 
+\usepackage{graphicx} 
+\usepackage{amsmath} 
+\setlength{\unitlength}{1mm}
+\usepackage{enumitem}
+\usepackage{cancel}
+\usepackage{fancyhdr}
+\usepackage{fancybox}
+\usepackage{hyperref}
+\usepackage{array}
+\usepackage{titling}
+
+\lhead{Antoine Groudiev}
+\chead{}
+\rhead{MP*, Charlemange}
+
+\lfoot{\jobname.tex}
+\cfoot{Calcul de distance}
+\rfoot{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0.4pt}
+
+\author{Antoine Groudiev - n°15039}
+\title{Vision par ordinateur appliquée à la détection de panneaux par un véhicule autonome}
+
+\begin{document}
+\maketitle
+
+\section*{Introduction}
+
+\section{Algorithme de Viola et Jones}
+\subsection{Image intégrale et classificateurs faibles}
+
+\subsection{Sélection des caractéristiques par \textit{AdaBoost}}
+
+\subsection{Mise en cascade}
+
+\subsection{Application à des images de taille standard}
+
+\section{Pré-traitement des images}
+
+\section{Mesure de l'exactitude et de l'efficacité de l'implémentation}
+\subsection{F-Score}
+\subsection{Résultats du détecteur de \texttt{19px}}
+\subsection{Résultats du détecteur de taille standard}
+
+\section*{Annexes}
+
+\begin{thebibliography}{}
+    
+    \bibitem{szeliski}Richard Szeliski, \textit{Computer Vision: Algorithms and Applications, 2nd ed. (2022)}, \url{https://szeliski.org/Book/}
+    \bibitem{viola-jones}Paul Viola, Michael Jones, \textit{Rapid Object Detection using a Boosted Cascade of Simple Features}, Conference on Computer Vision and Pattern Recognition, \url{https://www.cs.cmu.edu/~efros/courses/LBMV07/Papers/viola-cvpr-01.pdf}
+    \bibitem{computerphile}Michael Pound, Sean Riley, Computerphile, \textit{Detecting Faces (Viola Jones Algorithm)}, \url{https://www.youtube.com/watch?v=uEJ71VlUmMQ&t=15s}
+    \bibitem{wang}Yi-Qing Wang, \textit{An Analysis of the Viola-Jones Face Detection Algorithm}, IPOL, \url{https://www.ipol.im/pub/art/2014/104/?utm_source=doi}
+    %\bibitem{parande}Anmol Parande, \textit{Understanding and Implementing the Viola-Jones Image Classification Algorithm}, Medium, DataDrivenInvestors, \url{https://medium.datadriveninvestor.com/understanding-and-implementing-the-viola-jones-image-classification-algorithm-85621f7fe20b}
+    \bibitem{powers}David M W Powers, \textit{Evaluation: From Precision, Recall and F-Measure to ROC, Informedness, Markedness \& Correlation}, Journal of Machine Learning Technologies,  \url{https://web.archive.org/web/20191114213255/https://www.flinders.edu.au/science_engineering/fms/School-CSEM/publications/tech_reps-research_artfcts/TRRA_2007.pdf}
+
+
+\end{thebibliography}
+
+\end{document}

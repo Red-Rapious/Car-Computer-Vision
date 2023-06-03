@@ -8,11 +8,13 @@ import os
 import cv2
 import enum
 import pickle
+import random
 
 class ReadingMode (enum.Enum):
     CV2 = 0
     CUSTOM = 1
 
+# Enumération des méthodes de calcul de l'exactitude
 class AccuracyMethod (enum.Enum):
     STANDARD = 0
     FSCORE = 1
@@ -106,7 +108,8 @@ def images_to_pickle(name: str, positive_folder: str, negative_folder: str, exte
     with open(name + ".pkl", 'wb') as file:
         pickle.dump(training_data, file)
 
-def measure_accuracy(true_positives:int, true_negatives: int, false_positives: int, false_negatives: int, method:AccuracyMethod = AccuracyMethod.STANDARD) -> int:
+def measure_accuracy(true_positives:int, true_negatives: int, false_positives: int, false_negatives: int, method:AccuracyMethod = AccuracyMethod.STANDARD) -> float:
+    """ Calcule l'exactitude d'un classificateur à partir de sa matrice de confusion"""
     if method == AccuracyMethod.STANDARD:
         tot_true = true_positives + true_negatives
         tot_data = true_positives + true_negatives + false_negatives + false_positives
@@ -115,7 +118,7 @@ def measure_accuracy(true_positives:int, true_negatives: int, false_positives: i
         precision = true_positives / (true_positives + false_positives)
         recall = true_positives / (true_positives + false_negatives)
 
-        return 2 / (1/precision + 1/recall)
+        return 2 * (precision * recall) / (precision + recall)
 
 def picklisation(ratio=10):
     name = "/Users/antoinegroudiev/Documents/Code/Car-Computer-Vision/ressources/training_images/stop_sign_v2_images/pickle_files/train"
@@ -124,6 +127,12 @@ def picklisation(ratio=10):
     images_to_pickle(name, positive_folder, negative_folder, ".pgm", max_negatives=276*ratio)
 
 if __name__ == "__main__":
-    print("     [DEBUT DU PROGRAMME]")
-    picklisation(50)
-    print("     [FIN DU PROGRAMME]")
+    #print("     [DEBUT DU PROGRAMME]")
+    #image = np.array([[random.randint(0, 5  ) for i in range(4)] for j in range(4)])
+    #print(image)
+    #ii = integral_image(np.array(image))
+    #print(ii)
+    #print("     [FIN DU PROGRAMME]")
+
+    print(measure_accuracy(10, 900, 0, 90, AccuracyMethod.STANDARD))
+    print(measure_accuracy(10, 900, 0, 90, AccuracyMethod.FSCORE))

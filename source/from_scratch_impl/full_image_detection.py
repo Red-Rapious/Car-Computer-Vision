@@ -17,19 +17,20 @@ sys.path.append('/Users/antoinegroudiev/Documents/Code/Car-Computer-Vision/sourc
 from realtime_utilitaires import encadrer_objet, calculer_distance
 
 REAL_TIME_MODE = True
-RES_DOWNSCALE = 2.5 # diminue la taille de l'image pour accélérer le traitement
+RES_DOWNSCALE = 5 # diminue la taille de l'image pour accélérer le traitement
 SHOW_IMAGES = False
 
 SUBWINDOW_X = 19
 SUBWINDOW_Y = 19
 FACTOR_STEP = 1
-SHIFT_SCALE = 2
+DELTA = 2
 MAX_FACTOR = 8
 MIN_FACTOR = 5
 
-FIRST_DETECT_ONLY = True # la valeur False multiplie le temps de détection par 10 en moyenne
+FIRST_DETECT_ONLY = False # la valeur False multiplie le temps de détection par 10 en moyenne
 
 def apply_cascade_to_image(cascade: CascadeClassifier, image, printing=False, name="") -> list:
+    """ Applique le détecteur 19x19 à une image, en analysant plusieurs sous-fenêtre de l'image """
     subwindows_nb = 0
     image = np.array(image)
     if image[0][0].shape != 0:
@@ -46,21 +47,20 @@ def apply_cascade_to_image(cascade: CascadeClassifier, image, printing=False, na
         print("[INFO] Début de l'analyse multi-scalaire de l'image :", name, "de taille", image.shape)
     max_factor = min(min(image.shape[0], image.shape[1])//19, MAX_FACTOR)
     for fact in reversed(range(MIN_FACTOR, max_factor + 1, FACTOR_STEP)):
-        
-        # réduction de la taille de l'image
+        # mise à l'échelle de l'image
         res_image = np.array(cv2.resize(image, (0, 0), fx=1/fact, fy=1/fact, interpolation=cv2.INTER_NEAREST))
         if printing:
             print("     Facteur :", fact, "     Taille de l'image :", res_image.shape)
         
         # analyse de chaque région de l'image
-        for x in range(0, len(res_image) - SUBWINDOW_X + 1, SHIFT_SCALE):
-            for y in range(0, len(res_image[0]) - SUBWINDOW_Y + 1, SHIFT_SCALE):
+        for x in range(0, len(res_image) - SUBWINDOW_X + 1, DELTA):
+            for y in range(0, len(res_image[0]) - SUBWINDOW_Y + 1, DELTA):
                 xmin, xmax, ymin, ymax = x, x+SUBWINDOW_X, y, y+SUBWINDOW_Y
                 subwindows_nb += 1
                 result = cascade.classify(res_image[xmin:xmax, ymin:ymax])
                 
-                # indication dans le tableau de détection de la taille de l'objet détecté
-                if result:
+                # ajout dans le tableau de détection de la taille de l'objet détecté
+                if result: # si l'objet est détecté
                     boxes.append([ymin*fact, xmin*fact, SUBWINDOW_Y*fact, SUBWINDOW_X*fact, (0, 255, 0)])
                     if FIRST_DETECT_ONLY:
                         if printing:

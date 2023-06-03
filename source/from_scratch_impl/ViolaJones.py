@@ -51,7 +51,7 @@ class ViolaJones:
         print("Création des features...")
         features = self.build_features(training_data[0][0].shape)
         print(str(len(features)) + " features créées.")
-        print("Appliquation des features...")
+        print("Application des features...")
         X, y = self.apply_features(features, training_data)
         
         # Utilisation du module SciKit-Learn pour choisir les features les plus importantes
@@ -136,7 +136,7 @@ class ViolaJones:
         return np.array(features, dtype=object)
 
     def apply_features(self, features: list, training_data: list) -> tuple:
-        """ Evalue chaque feature sur chaque exemple d'entraînement """
+        """ Évalue chaque feature sur chaque exemple d'entraînement """
 
         X = np.zeros((len(features), len(training_data)))
         y = list(map(lambda data: data[1], training_data)) # tableau de booléens
@@ -147,7 +147,8 @@ class ViolaJones:
         for pos, neg in features:
             # Message de progression
             if i%modulo == 0 and i != 0:
-                print("     [INFO] Avancée :", str(i) + "/" + str(len(features)), "     Temps pour", modulo, "features : " + str(round(time.time() - last_time, 2)) + "s    Temps restant estimé : " + str(round((time.time() - last_time) * (len(features) - i) / modulo / 60, 0)) + "min")
+                remaining_time = round((time.time() - last_time) * (len(features) - i) / modulo / 60, 0)
+                print("     [INFO] Avancée :", str(i) + "/" + str(len(features)), "     Temps pour", modulo, "features : " + str(round(time.time() - last_time, 2)) + "s    Temps restant estimé : " + str(remaining_time) + "min")
                 last_time = time.time()
             
             X[i] = [evaluation(training_data[j][0], pos, neg) for j in range(len(training_data))]
@@ -157,12 +158,7 @@ class ViolaJones:
         return X, y
 
     def train_weak_classifiers(self, X: list, y: list, features: list, weight: list) -> list:
-        """ 
-        Entraîne les Weak Classifiers à l'aide de la méthode de calcul de l'erreur
-        Attention, cette fonction est naturellement longue à exécuter 
-        
-        classifiers: WeakClassifiers list
-        """
+        """ Entraîne les Weak Classifiers à l'aide de la méthode de calcul de l'erreur minimale"""
 
         # Compte le nombre de classificateurs positifs et négatifs
         total_pos, total_neg = 0, 0
@@ -190,7 +186,7 @@ class ViolaJones:
                 # Calcul de l'erreur
                 error = min(neg_weights + total_pos - pos_weights, pos_weights + total_neg - neg_weights)
                 
-                # Mise à jour des élements avec erreur minimale
+                # Mise à jour des éléments avec erreur minimale
                 if error < min_error:
                     min_error = error
                     best_feature = features[index]

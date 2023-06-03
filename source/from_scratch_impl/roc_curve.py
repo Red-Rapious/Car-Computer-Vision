@@ -20,7 +20,7 @@ UPDATE_STEP = 100
 # HYPERPARAMÈTRES
 OBJECT = "stop_sign_v2"
 CASCADE_NAME = "cascade_1_5_10"
-CASCADE_LAYERS = [1, 5, 10, 25, 50, 75, 100]
+CASCADE_LAYERS = [1, 5, 10]
 
 SAVE_FOLDER = "/Users/antoinegroudiev/Documents/Code/Car-Computer-Vision/source/from_scratch_impl/saves/"
 IMAGES_FOLDER = "././ressources/training_images/" + OBJECT + "_images/"
@@ -43,7 +43,7 @@ def test_standard_cascade(filename="Cascade"):
     #train = load_training_data()
     data = test #+ train
     clf = CascadeClassifier.load(SAVE_FOLDER + OBJECT + "_" + filename)
-    curve = compute_curve(clf, data)
+    curve = compute_curve(clf, data, AccuracyMethod.STANDARD)
     plot_roc(curve, len(data))
 
 def load_fullsize_data():
@@ -65,7 +65,7 @@ def classify(x, clf):
     else:
         return clf.classify(x)
 
-def compute_curve(clf, data):
+def compute_curve(clf, data, accuracy_method=AccuracyMethod.STANDARD):
     correct = 0
     tot_negatives, tot_positives = 0, 0
     true_negatives, false_negatives = 0, 0
@@ -88,7 +88,7 @@ def compute_curve(clf, data):
         classification_time += time.time() - start
         if prediction == 1 and y == 0:
             false_positives += 1
-            curve.append(measure_accuracy(true_positives, true_negatives, false_positives, false_negatives, AccuracyMethod.STANDARD))
+            curve.append(measure_accuracy(true_positives, true_negatives, false_positives, false_negatives, accuracy_method))
         if prediction == 0 and y == 1:
             false_negatives += 1
         if prediction == 0 and y == 0:

@@ -44,7 +44,7 @@ class CascadeClassifier:
             neg = false_positives
 
     def classify(self, image:list) -> bool:
-        """ Indique si une image contient ou non l'objet précédemment classifié """
+        """ Prédit si une image contient ou non l'objet précédemment classifié """
         ii = integral_image(image)
         for clf in self.classifiers:
             if not clf.classify(ii, alreadyII=True):

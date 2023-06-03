@@ -35,38 +35,28 @@ def features_count_graph(start: int, stop: int, step: int, ratio: float=16/9, sh
     plt.show()
 
 def fill_rectangle(image, angle1: tuple, angle2: tuple, is_positive: bool) -> None:
-    col = (255, 255, 255) if is_positive else (0, 0, 0)
-    for x in range(angle1[0], angle2[0] + 1):
-        for y in range(angle1[1], angle2[1] + 1):
-            image[y][x] = col
+    """ Remplit un rectangle par une couleur unie, noir ou blanc, sur une image """
 
+    col = (220, 220, 220) if is_positive else (0, 0, 0) # blanc si positif, noir si négatif
+    for x in range(angle1[0], angle2[0]):
+        for y in range(angle1[1], angle2[1]):
+            image[y][x] = col # Remplit le pixel de la couleur désirée
 
 def draw_weakclassifier_on_image(image: list, weak_classifier: WeakClassifier) -> None:
-    """ Dessine la feature d'un WeakClassifier sur une image avec OpenCV """
+    """ Dessine la feature d'un WeakClassifier sur une image """
     is_polarity_pos = True if weak_classifier.polarity == 1 else False
+
+    # Remplit les régions positives en blanc et les régions négatives en noir, 
+    # et inversement pour une polarité négative
     for region in weak_classifier.positive_regions:
         fill_rectangle(image, (region.x, region.y), (region.x + region.width, region.y + region.height), is_polarity_pos)
     for region in weak_classifier.negative_regions:
         fill_rectangle(image, (region.x, region.y), (region.x + region.width, region.y + region.height), not is_polarity_pos)
 
-def show_image_as_table(image: list, title: str) -> None:
-    #define figure and axes
-    fig, ax = plt.subplots(num=title)
-
-    #hide the axes
-    fig.patch.set_visible(False)
-    ax.axis('off')
-    ax.axis('tight')
-
-    #create data
-    df = pandas.DataFrame(image)
-
-    #create table
-    table = ax.table(cellText=df.values, loc='center')
-
-    #display table
-    fig.tight_layout()
-    plt.show()
+def draw_main_classifiers_on_image(image: list, classifiers: list) -> None:
+    """ Dessine les features d'une liste de WeakClassifier sur une image """
+    for classifier in classifiers:
+        draw_weakclassifier_on_image(image, classifier)
 
 def draw_random_classifier_on_video() -> None:
     capture = cv2.VideoCapture("ressources/videos/Parc_naturel.mp4")
@@ -82,17 +72,36 @@ def draw_random_classifier_on_video() -> None:
         if key == 27:
             break
 
+def show_image_as_table(image: list, title: str) -> None:
+    """ Affiche une image sous forme de tableau de nombres """
+    # Définition de la figure et des axes
+    fig, ax = plt.subplots(num=title)
+
+    # Suppression des axes
+    fig.patch.set_visible(False)
+    ax.axis('off')
+    ax.axis('tight')
+
+    # Conversion de l'image en DataFrame de la bibliothèque Pandas
+    df = pandas.DataFrame(image)
+
+    # Création du tableau
+    _ = ax.table(cellText=df.values, loc='center')
+
+    # Affichage de la figure
+    fig.tight_layout()
+    plt.show()
+
 def show_integral_image_process(file_path:str = "ressources/training_images/faces_images/train/face/face00324.pgm") -> None:
     image = np.array(read_image(file_path), dtype=np.uint8)
-    gray_image = cv2.cvtColor(image, cv2.COLOR_GRAY2BGR)
+    #gray_image = cv2.cvtColor(image, cv2.COLOR_GRAY2BGR)
 
+    # Affichage de l'image en nuances de gris
     cv2.imshow("Image en nuances de gris", cv2.resize(image, (0, 0), fx=30, fy=30, interpolation=cv2.INTER_NEAREST))
+    # Affichage de l'image sous forme de tableau de nombres
     show_image_as_table(image, title="Image numérique")
+    # Affichage de l'image intégrale sous forme de tableau de nombres
     show_image_as_table(np.int_(integral_image(image)), title="Image intégrale")
-
-def draw_main_classifiers_on_image(image: list, classifiers: list) -> None:
-    for classifier in classifiers:
-        draw_weakclassifier_on_image(image, classifier)
 
 def display_data_sample_table(folder_path: str, nb_images_side: tuple, resolution: tuple):
     folder = glob.glob(folder_path)
@@ -120,6 +129,23 @@ def display_data_sample_table(folder_path: str, nb_images_side: tuple, resolutio
     cv2.imshow("Training images", full_image_table)
     cv2.waitKey(0)
 
+def classifier_superposition_face_example():
+    clf = ViolaJones(feature_number=5)
+    clf.classifiers = [WeakClassifier([RectangleRegion(9, 4, 2, 6)], [RectangleRegion(7, 4, 2, 6)], 0.0, 1),
+                       WeakClassifier([RectangleRegion(8, 1, 3, 5)], [RectangleRegion(2, 1, 6, 5), RectangleRegion(11, 1, 6, 5)], 0.0, 1),
+                       WeakClassifier([RectangleRegion(7, 17, 5, 2)], [RectangleRegion(7, 15, 5, 2)], 0.0, 1),
+                       WeakClassifier([RectangleRegion(13, 10, 5, 3)], [RectangleRegion(13, 13, 5, 3)], 0.0, 1),
+                       WeakClassifier([RectangleRegion(1, 11, 5, 4)], [RectangleRegion(1, 15, 5, 4)], 0.0, 1)]
+
+    image = cv2.cvtColor(np.array(read_image("ressources/training_images/face_images/train/face/face00324.pgm"), dtype=np.uint8), cv2.COLOR_GRAY2BGR)
+    draw_main_classifiers_on_image(image, clf.classifiers)
+
+    image = cv2.resize(image, (0, 0), fx=15, fy=15, interpolation=cv2.INTER_NEAREST)
+
+    cv2.imshow(" ", image)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
+
 
 if __name__ == "__main__":
     '''
@@ -137,4 +163,34 @@ if __name__ == "__main__":
     show_integral_image_process("ressources/training_images/stop_sign_images/stop_signs_images_processed/train/stop_sign_train_44.pgm")
     '''
 
-    display_data_sample_table("/Users/antoinegroudiev/Documents/Code/Car-Computer-Vision/ressources/training_images/stop_sign_v2_images/stop_sign_v2_images_processed/train/*", (16, 16), (19, 19))
+    #display_data_sample_table("/Users/antoinegroudiev/Documents/Code/Car-Computer-Vision/ressources/training_images/stop_sign_v2_images/test_variance_stop_sign_v2_images_processed/train/*", (16, 16), (19, 19))
+
+    """
+    image = cv2.cvtColor(np.array(read_image("ressources/training_images/stop_sign_images/stop_signs_images_processed/train/stop_sign_train_44.pgm"), dtype=np.uint8), cv2.COLOR_GRAY2BGR)
+    image = cv2.resize(image, (0, 0), fx=500/19, fy=500/19, interpolation=cv2.INTER_NEAREST)
+    fill_rectangle(image, (0, 0), (499, 499), True)
+    fill_rectangle(image, (10, 10), (249, 249), False)
+    fill_rectangle(image, (249, 10), (489, 249), False)
+    cv2.imshow(" ", image)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
+    """
+
+    """
+    #classifier_superposition_face_example()
+    image = cv2.cvtColor(np.array(read_image("ressources/training_images/face_images/train/non-face/B20_03430.pgm"), dtype=np.uint8), cv2.COLOR_GRAY2BGR)
+    #draw_main_classifiers_on_image(image, clf.classifiers)
+
+    image = cv2.resize(image, (0, 0), fx=15, fy=15, interpolation=cv2.INTER_NEAREST)
+    """
+
+    tab = np.array(read_image("ressources/training_images/stop_sign_images/stop_signs_images_processed/train/stop_sign_train_44.pgm"), dtype=np.uint8)
+    tab = integral_image(tab)
+    tab = tab * 255 / tab[18][18]
+    tab = np.round(tab).astype(int)
+    grayscale = np.array(tab, dtype=np.uint8)
+    image = cv2.cvtColor(grayscale, cv2.COLOR_GRAY2BGR)
+    image = cv2.resize(image, (0, 0), fx=500/19, fy=500/19, interpolation=cv2.INTER_NEAREST)    
+    cv2.imshow(" ", image)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()

@@ -2,12 +2,14 @@ import numpy as np
 from random import randrange, seed
 import time
 
-# CONSTANTES
-# N = 10 # nombre de matrices à inverser
-# T = 1000 # taille des matrices
-# M = 100 # valeur max des éléments
-
 def stress_test(N: int, T: int, M: int, number: str):
+    """
+    Inverse N matrices aléatoire de taille T x T dont les éléments 
+    sont compris entre 1 et M, et retourne le temps d'exécution.
+    N : nombre de matrices à inverser
+    T : taille des matrices
+    M : valeur max des éléments
+    """
     start = time.time()
     print("[Début du test " + number + "]")
 
