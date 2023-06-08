@@ -6,6 +6,7 @@
 \usepackage{amsfonts} 
 \usepackage{graphicx} 
 \usepackage{amsmath} 
+\usepackage[dvipsnames]{xcolor}
 \setlength{\unitlength}{1mm}
 \usepackage{enumitem}
 \usepackage{cancel}
@@ -24,12 +25,17 @@
 \usepackage{multirow} % tableaux
 \usepackage[justification=centering]{caption}
 \usepackage{lastpage}
+\usepackage{listingsutf8}
+\usepackage{pythonhighlight}
+\usepackage{mathrsfs}
 
 \DeclareMathOperator*{\argmax}{argmax}
 \DeclareMathOperator*{\argmin}{argmin}
 
 \makeatletter
 \renewcommand{\ALG@name}{Algorithme}
+\newcommand{\algorithmautorefname}{Algorithme}
+
 
 \algblock{Input}{EndInput}
 \algnotext{EndInput}
@@ -38,18 +44,22 @@
 
 \author{Antoine Groudiev - n°15039}
 \date{\vspace{-6ex}}
-\title{\textit{Rapport de synthèse du TIPE :} \\ Vision par ordinateur appliquée à la détection de panneaux}
+\title{\textit{Rapport de synthèse du TIPE :} \\ Algorithme de \textit{boosting} appliqué à la vision par ordinateur}
 
 \begin{document}
 \maketitle
 
 \section*{Introduction}
-La détection d'objets est la branche de la vision par ordinateur visant à classifier des images selon la présence ou l'absence d'un objet spécifique dans l'image. Je me suis intéressé à la détection de panneaux routiers dans un flux vidéo, et plus spécifiquement à un algorithme de \textit{boosting}. Le terme \textit{boosting} désigne une famille d'algorithmes d'apprentissage qui pondère un ensemble de classificateurs faibles, qui classent chacun légèrement mieux que le hasard, pour former un classificateur fort de bonne exactitude.
+La détection d'objets est la branche de la vision par ordinateur visant à classifier des images selon la présence ou l'absence d'un objet spécifique dans celles-ci. Je me suis intéressé à la détection de panneaux routiers dans un flux vidéo, et plus spécifiquement à un algorithme de \textit{boosting}. 
+
+Le terme \textit{boosting} désigne une famille d'algorithmes d'apprentissage automatique fonctionnant sur un principe commun : étant donné un ensemble de classificateurs faibles, qui classent chacun légèrement mieux que le hasard, l'algorithme de \textit{boosting} sélectionne et pondère quelques classificateurs faibles pour former un classificateur fort, de bonne exactitude.
+
+Mon travail a pour objectif la constitution d'un détecteur de panneaux STOP dans un flux vidéo. Je me suis donc intéressé à l'algorithme de boosting \textit{AdaBoost} allié à la méthode de Viola et Jones pour étudier et mesurer l'efficacité de l'implémentation de ces méthodes de détection.
 
 \section{Algorithme de Viola et Jones}
 \textit{AdaBoost} est un des algorithmes de \textit{boosting} les plus populaires, notamment grâce à son utilisation par la méthode de Viola et Jones, un algorithme de reconnaissance de visages, présenté en 2001 \cite{viola-jones}.
 
-Le détecteur doit pouvoir prendre en entrée des images de tailles quelconques, et retourner la liste des emplacements dans l'image de l'objet à détecter. La première phase de la création du détecteur se restreint cependant à la détection d'objets dans une image carrée de petite taille : j'ai fait le choix de \texttt{19px} de côté. La dernière partie de l'algorithme, détaillée en \ref{sec:taille_standard}, appliquera ce détecteur à une image detaille standard, i.e. de plusieurs centaines de pixels de côté.
+Le détecteur doit pouvoir prendre en entrée des images de tailles quelconques, et retourner la liste des emplacements dans l'image de l'objet à détecter. La première phase de la création du détecteur se restreint cependant à la détection d'objets dans une image carrée de petite taille : j'ai fait le choix de \texttt{19px} de côté. La dernière partie de l'algorithme, détaillée en \ref{sec:taille_standard}, appliquera ce détecteur à une image de taille standard, \textit{i.e.} de plusieurs centaines de pixels de côté.
 
 \subsection{Classificateurs faibles}
 Les algorithmes de \textit{boosting} fonctionnent par sélection de classificateurs faibles. Dans le contexte de la méthode de Viola et Jones, un classificateur faible est constitué de trois éléments.
@@ -65,7 +75,7 @@ Les algorithmes de \textit{boosting} fonctionnent par sélection de classificate
     %\end{figure}
 \end{wrapfigure}
     
-Une \textit{feature} est consitutée de $2$ à $4$ régions rectangulaires adjacentes, comptées positivement ou négativement. Leurs formes sont imposées comme dans la \autoref{fig:forme-features}. 
+Une \textit{feature} est constituée de $2$ à $4$ régions rectangulaires adjacentes, comptées positivement ou négativement. Leurs formes sont imposées comme dans la \autoref{fig:forme-features}. 
 Chaque \textit{feature} va cibler une zone spécifique de l'objet à détecter. Dans le cas d'un visage par exemple, le détecteur peut apprendre que la zone du creux de l'œil est généralement plus sombre que la zone entre les deux yeux. Ainsi, une image comportant cette différence de luminosité caractéristique sera probablement un visage.
 
 
@@ -74,22 +84,22 @@ Le score d'une \textit{feature} $f$ peut être évalué sur une image $x$ à l'a
 \begin{equation}\label{score-feature}
     f(x) = \sum_{r \in R_+} r(x) - \sum_{r \in R_-} r(x)
 \end{equation}
+où $r(x)$ désigne la somme des pixels dans la région délimitée par $r$. Une méthode efficace du calcul de $r(x)$ sera donnée par l'équation \ref{somme-region}. Intuitivement, la formule \ref{score-feature} traduit que le score d'une \textit{feature} est d'autant plus faible que les zones négatives compensent les zones positives.
 
-où $r(x)$ désigne la somme des pixels dans la région délimitée par $r$. Une méthode efficace du calcul de $r(x)$ sera donnée par l'équation \ref{somme-region}. Intuitivement, la formule \ref{score-feature} traduit que le score d'une \textit{feature} est d'autant plus faible que les zones positives compensent les zones négatives. 
 
-
-Le nombre de \textit{features} possibles croît exponentiellement avec le côté de l'image, d'où la nécessité d'entraîner dans un premier temps un détecteur de côté faible.
+Le nombre de \textit{features} possibles croît exponentiellement avec le côté de l'image (voir la \autoref{fig:nb-features}), d'où la nécessité d'entraîner dans un premier temps un détecteur de côté faible. La construction de toutes les \textit{features} possibles est implémentée en Partie \ref{sec:construction-features} de l'annexe.
 
 \begin{wrapfigure}{r}{0.4\textwidth}
-%\begin{figure}[h]
-    \includegraphics[scale = 0.35]{nombre_features_cut}
-    \centering
-    \caption{Nombre de \textit{features} en fonction de la taille de l'image}
+    %\begin{figure}[h]
+        \includegraphics[scale = 0.35]{nombre_features_cut}
+        \centering
+        \caption{Nombre de \textit{features} en fonction de la taille de l'image}
+        \label{fig:nb-features}
 %\end{figure}
 \end{wrapfigure}
 
 \subsubsection{Évaluation par un classificateur faible}
-À chaque \textit{feature} (notée $f$) est associée un \textit{threshold} (ou seuil) $\theta > 0$, et une polarité $p \in \{-1 ; 1\}$. Soit $x$ une image de \texttt{19px} de côté. Le classificateur faible $C_{(f, \: \theta, \: p)}^{faible}$ convertit le score de la \textit{feature} sur $x$ en un booléen selon la loi suivante :
+Pour former un classificateur faible, l'algorithme associe à chaque \textit{feature} (notée $f$) un \textit{threshold} (ou seuil) $\theta > 0$, et une polarité $p \in \{-1 ; 1\}$. Considérons $x$ une image de \texttt{19px} de côté. Le classificateur faible $C_{(f, \: \theta, \: p)}^{faible}$ convertit le score de la \textit{feature} sur $x$ en un booléen selon la loi suivante :
 
 \begin{equation}
     C_{(f, \: \theta, \: p)}^{faible}(x) = 
@@ -99,10 +109,10 @@ Le nombre de \textit{features} possibles croît exponentiellement avec le côté
         \end{cases}
 \end{equation}
 
-Si le score de la \textit{feature} sur $x$ est, à la polarité près, sous le seuil, alors le classificateur faible juge que la zone de l'image correspond à l'objet à détecter.
+Ainsi, si le score de la \textit{feature} sur $x$ est, à la polarité près, sous le seuil, alors le classificateur faible juge que la zone de l'image correspond à l'objet à détecter.
 
 \subsection{Image intégrale}
-La complexité du calcul du score d'un classificateur faible est déterminée par la complexité du calcul de la somme des valeurs des pixels dans un sous-rectangle de l'image.
+L'équation \ref{score-feature} montre que la complexité du calcul du score d'un classificateur faible est déterminée par la complexité du calcul de la somme des valeurs des pixels dans un sous-rectangle de l'image.
 
 Une approche naïve consisterait à recalculer, à chaque évaluation du score d'un classificateur, la somme des valeurs des pixels de l'image dans certaines de ses régions rectangulaires. Un tel calcul pour une région de taille $L_r$ sur $l_r$ a une complexité en $O(L_r \times l_r)$. Si l'on considère une image de dimensions $n \times n$ et que l'on veut calculer la somme dans $p$ régions de dimensions proches de $n \times n$, la complexité totale est en $O(p \times n^2)$.
 
@@ -120,17 +130,17 @@ Pour réduire cette complexité, la méthode de Viola et Jones introduit \textbf
     \forall x, y, ii(x, y) = \sum_{x' \leq x, y' \leq y} i(x', y')
 \end{equation}
 
-Ainsi, chaque coefficient de l'image intégrale contient la somme des coefficients en haut à gauche du pixel considéré. Ceci permet alors d'accéder en temps constant à la somme des pixels dans un sous-rectangle de l'image $(i(x, y))_{x, y}$, en réalisant simplement la somme de quatre termes. En effet, considérons $R$ le sous-rectangle délimité par les sommets $(x_1, y_1)$ et $(x_2, y_2)$. Alors la somme $r(x)$ des pixels de l'image $x$ dans la région $R$ vaut :
+Intuitivement, chaque coefficient de l'image intégrale contient la somme des coefficients en haut à gauche du pixel considéré. Ceci permet alors d'accéder en temps constant à la somme des pixels dans un sous-rectangle de l'image $(i(x, y))_{x, y}$, en réalisant simplement la somme de quatre termes. En effet, considérons $R$ le sous-rectangle délimité par les sommets $(x_1, y_1)$ et $(x_2, y_2)$. Alors la somme $r(x)$ des pixels de l'image $x$ dans la région $R$ vaut :
 
 \begin{equation}\label{somme-region}
-    r(x) = ii(x_2, y_2) - ii(x_2, y_1) - ii(x_1, y_2) + ii(x_1, y_1)
+    \boxed{r(x) = ii(x_2, y_2) - ii(x_2, y_1) - ii(x_1, y_2) + ii(x_1, y_1)}
 \end{equation}
 
 
 \subsection{Sélection des caractéristiques par \textit{AdaBoost}}
-La phase de \textit{boosting} à proprement parler vise à sélectionner un nombre $T \in \mathbb{N}^*$ de classificateurs faibles qui représentent le mieux l'objet à détecter. L'algorithme utilise pour cela en entrée un jeu d'entraînement, c'est-à-dire une liste de tuples $(x, y) \in \mathcal{M}_{19, 19}(\llbracket 0, 255 \rrbracket) \times \{0 ; 1\}$. 
+La phase de \textit{boosting} vise à sélectionner un nombre $T \in \mathbb{N}^*$ de classificateurs faibles qui représentent le mieux l'objet à détecter. L'algorithme utilise pour cela en entrée un jeu d'entraînement, c'est-à-dire une liste de tuples $(x, y) \in \mathscr{M}_{19, 19}(\llbracket 0, 255 \rrbracket) \times \{0 ; 1\}$. 
 
-Chaque tuple est constitué d'une image contenant ou ne contenant pas l'objet à détecter, centré et cadré le cas échéant, et d'un label booléen, valant $1$ si l'objet à détecter est effectivement représenté sur l'image. La constitution d'un tel jeu sera détaillée dans la Partie \ref{sec:pre-traitement}.
+Chaque tuple est constitué d'une image contenant ou ne contenant pas l'objet à détecter, centré et cadré le cas échéant, et d'un label booléen, valant $1$ si l'objet à détecter est effectivement représenté sur l'image (on identifiera \texttt{True} (respectivement \texttt{False}) à \texttt{1} (respectivement \texttt{0})). La constitution d'un tel jeu sera détaillée dans la Partie \ref{sec:pre-traitement}.
 
 \begin{figure}[h]
     \includegraphics[scale = 0.4]{exemples-jeu-cut}
@@ -138,35 +148,44 @@ Chaque tuple est constitué d'une image contenant ou ne contenant pas l'objet à
     \caption{Exemple de deux tuples du jeu d'entraînement}
 \end{figure}
 
-L'algorithme \textit{AdaBoost} est un algorithme glouton qui sélectionne un à un les $T$ meilleurs classificateurs parmi les $50\,000$ présents dans l'image de \texttt{19px} de côté. Son initialisation consiste en l'affection à chaque image d'un poids, qui équilibre l'importance des images positives et négatives. Ensuite, la sélection d'un classificateur se fait en trois grandes étapes : l'erreur de chaque classificateur est calculée selon le classement qu'il fait de chaque image et de leurs poids respectifs ; le classificateur d'erreur minimale est sélectionné ; les poids sont mis à jours pour prendre en compte le nouveau classificateur, puis normalisés.
+L'algorithme \textit{AdaBoost} est un algorithme glouton qui sélectionne un à un les $T$ meilleurs classificateurs parmi les $50\,000$ présents dans l'image de \texttt{19px} de côté. Son initialisation consiste en l'affectation à chaque image d'un poids, qui équilibre l'importance des images positives et négatives. Ensuite, la sélection d'un classificateur se fait en trois grandes étapes : l'erreur de chaque classificateur est calculée selon le classement qu'il fait de chaque image, et de son poids ; le classificateur d'erreur minimale est sélectionné ; les poids sont mis à jours pour prendre en compte le nouveau classificateur, puis normalisés.
+
+Une implémentation en est également donnée en Partie \ref{sec:impl-adaboost} de l'annexe.
 
 %\begin{wrapfigure}{L}{0.6\textwidth}
 %\begin{minipage}{0.6\textwidth}
 \begin{algorithm}[H]
     \caption{Entraînement par AdaBoost}
+    \label{algo:adaboost}
     \begin{algorithmic}
         \Input
 
-        $(x_1, y_2), ..., (x_n, y_n)$
-        \Comment{Jeu d'entraînement}
+        $(x_1, y_1), ..., (x_n, y_n)$ \Comment{Jeu d'entraînement}
+
+        $(C_k^{faible})$ \Comment{Tous les classificateurs constructibles dans l'image}
+
         \EndInput
         \State $m \gets$ nombre d'images négatives
         \State $l \gets$ nombre d'images positives
         \For{$i \in \llbracket 1, n \rrbracket$} \Comment{Initialisation des poids}
 
-            \State $w_{1, i} \gets \begin{cases}
+            \State $w_{1, i} \gets \begin{cases} 
                 \frac{1}{m} \:\: si \:\: y_i = 0 \\
                 \frac{1}{l} \:\: sinon
-                \end{cases}$
+                \end{cases}$ 
+                
+                \Comment{Le premier indice désigne l'indice de l'itération 
+                
+                \Comment{Le second désigne l'indice de l'image}}
         \EndFor
         \For{$t \in \llbracket 1, T \rrbracket$}
 
-            \For{$i \in \llbracket 1,$ nombre de classificateurs $\rrbracket$}
+            \For{$k \in \llbracket 1,$ nombre de classificateurs$\rrbracket$}
 
-                \State $\varepsilon_i = \sum_i w_{t,i} \times \delta(C_i^{faible}(x_i), \overline{y_i})$ \Comment{Calcul de l'erreur de chaque classificateur}
+                \State $\varepsilon_k = \sum_i w_{t,i} \times \delta(C_k^{faible}(x_i), \overline{y_i})$ \Comment{Calcul de l'erreur de chaque classificateur}
             \EndFor
 
-            \State $C_t^{faible} \gets \argmin_{C_i^{faible}} \varepsilon_i$
+            \State $C_t^{faible} \gets \argmin_{C_k^{faible}} \varepsilon_k$
             \For{$i \in \llbracket 1, n \rrbracket$} \Comment{Mise à jour des poids}
 
             \If{image $x_i$ bien classée par $C_t^{faible}$}
@@ -184,19 +203,19 @@ L'algorithme \textit{AdaBoost} est un algorithme glouton qui sélectionne un à 
 %\end{minipage}
 %\end{wrapfigure}
 
-En toute généralité, la complexité de \textit{AdaBoost} est en $O(n \cdot F \cdot \tau + T \cdot n)$ où $n$ désigne le nombre d'images d'entraînement, $F$ le nombre total de classificateurs faibles, et $\tau$ le temps moyen de classification d'un classificateur faible sur un $x_i$. On a $T = O(F)$ et dans le cas de Viola-Jones, l'image intégrale garantit $\tau = O(1)$, ce qui donne une complexité en $O(n \cdot F)$.
+En toute généralité, la complexité de \textit{AdaBoost} est en $O(n \cdot F \cdot \tau + T \cdot n)$ où $n$ désigne le nombre d'images d'entraînement, $F$ le nombre total de classificateurs faibles, et $\tau(n)$ le temps moyen de classification d'un classificateur faible sur un $x_i$. On a $T = O(F)$ et dans le cas de Viola-Jones, l'image intégrale garantit $\tau(n) = O(1)$, ce qui donne une complexité en $O(n \cdot F)$.
 
 Après sélection des $T$ classificateurs faibles, l'algorithme les combine en un unique classificateur fort $C^{fort}$, défini par :
 
 \begin{equation}
     C_T^{fort}(x) = 
     \begin{cases}
-    1 \:\: si \:\: \sum_{i=1}^T \alpha_i C_i^{faible}(x) \leq \frac{1}{2} \sum_{i=1}^T \alpha_i \\
+    1 \:\: si \:\: \sum_{t=1}^T \alpha_t C_t^{faible}(x) \leq \frac{1}{2} \sum_{t=1}^T \alpha_t \\
     0 \:\: sinon
     \end{cases}
 \end{equation}
 
-où les $\alpha_i = \log(\frac{1 - \varepsilon_i}{\varepsilon_i})$ pondèrent les classificateurs selon leur erreur. Ainsi, aux pondérations près, si au moins la moitié des classificateurs faibles retournent $1$, le classificateur fort retourne $1$.
+où les $\alpha_t = \log(\frac{1 - \varepsilon_t}{\varepsilon_t})$ pondèrent les classificateurs selon leur erreur. Ainsi, aux pondérations près, si au moins la moitié des classificateurs faibles retournent $1$, le classificateur fort retourne $1$. L'expression des $\alpha_t$ garantit la diminution à chaque étape de l'erreur globale du classificateur. Une preuve mathématique en est donnée en Partie \ref{sec:preuve-boost} de l'annexe.
 
 
 \subsection{Mise en cascade}
@@ -208,14 +227,16 @@ Selon sa valeur de $T$, un classificateur fort est soit très efficace (pour $T$
     \caption{Schéma d'une cascade}
 \end{figure}
 
-Une image analysée par la cascade va être classée successivement par une suite $(C_T^{fort})_T$ pour des valeurs de $T$ croissantes. Une image est alors rejetée par la cascade dès qu'elle est classée négativement par un des classificateurs forts, permettant une grande efficacité. Au contraire, une image finalement classée positivement par la cascade sera passée à travers des classificateurs forts avec $T$ très grands, garantissant un faible nombre de faux positifs.
+Une image analysée par la cascade va être classée successivement par une suite $(C_T^{fort})_T$ pour des valeurs de $T$ croissantes. Une image est alors rejetée par la cascade dès qu'elle est classée négativement par un des classificateurs forts, permettant une grande efficacité. Au contraire, une image ultimement classée positivement par la cascade sera passée à travers des classificateurs forts avec $T$ très grands, garantissant un faible nombre de faux positifs.
+
+Une simple implémentation de la cascade est donnée en Partie \ref{sec:code-cascade} de l'annexe.
 
 \subsection{Application à des images de taille standard}
 \label{sec:taille_standard}
 L'application du détecteur à une image standard se fait en analysant des sous-fenêtres carrées de la grande image. 
 
 \begin{figure}[h]
-    \includegraphics[scale = 0.5]{sous-fenetre}
+    \includegraphics[scale = 0.4]{sous-fenetre}
     \centering
     \caption{Exemples de sous-fenêtres d'une image de taille standard}
 \end{figure}
@@ -238,11 +259,13 @@ Une telle quantité d'images n'existe pas pour l'objet sur lequel je me suis con
 
 La première étape consiste en un recadrage manuel de l'image. La seconde, réalisée par un script, redimensionne l'image vers \texttt{19px} de côté par interpolation bilinéaire, et la convertit en niveaux de gris, chaque pixel appartenant finalement à $\llbracket 0, 255 \rrbracket$ (\texttt{8 bits}).
 
+Les images traitées sont finalement réparties en deux ensembles : un jeu d'entraînement et un jeu de test, pour éviter de tester le détecteur sur des images qu'il a déjà rencontré.
+
 \section{Mesure de l'exactitude et de l'efficacité de l'implémentation}
-Le langage courant confond l'exactitude, c'est à dire la proximité du résultat expérimental à la valeur théorique, et la précision, qui quantifie la dispersion des résultats. L'objectif de cette dernière partie vise à déterminer précisément l'exactitude du détecteur précédement implémenté.
+Le langage courant confond l'exactitude, c'est à dire la proximité du résultat expérimental à la valeur théorique, et la précision, qui quantifie la dispersion des résultats. L'objectif de cette dernière partie vise à déterminer précisément l'exactitude du détecteur précédemment implémenté.
 
 \subsection{Quantification de l'exactitude}
-Toute quantification de l'exactitude est une expression des coefficients de la \textbf{matrice de confusion} d'un détecteur, matrice qui compare le classement du détecteur au label réel.
+Toute quantification de l'exactitude est une expression des coefficients de la \textbf{matrice de confusion} d'un détecteur, matrice qui compare le classement du détecteur au label réel (représentée sur la \autoref{fig:matrice-confusion}).
 
 \begin{wrapfigure}[7]{r}{0.4\textwidth}
     \renewcommand{\arraystretch}{1.5}
@@ -276,10 +299,10 @@ Ou encore avec les notations de la \autoref{fig:matrice-confusion} :
     \boxed{A = \frac{V_p + V_n}{V_P + V_n + F_p + F_n}}
 \end{equation}
 
-Cependant, cette méthode de calcul introduit des biais en cas de déséquilibre important entre le nombre d'images positives et le nombre d'images négatives. Nos échantillons de tests étant fortement déséqulibrés, il faut introduire une nouvelle méthode de calcul de l'exactitude.
+Cependant, cette méthode de calcul introduit des biais en cas de déséquilibre important entre le nombre d'images positives et le nombre d'images négatives. Mes échantillons de tests étant fortement déséquilibrés, il faut introduire une nouvelle méthode de calcul de l'exactitude.
 
 \subsubsection{F-Score}
-On introduit alors souvent le F-Score ou $F_1$-Score, défini comme la moyenne harmonique de la précision et du rappel. \cite{powers}
+On introduit alors souvent le F-Score (ou $F_1$-Score), défini comme la moyenne harmonique de la précision et du rappel. \cite{powers}
 
 La précision et le rappel sont définis comme :
 \begin{equation}
@@ -292,7 +315,7 @@ Finalement, le F-Score est donnée comme la moyenne harmonique des deux :
 \begin{equation}
     \boxed{F_1 = \frac{2}{\frac{1}{P} + \frac{1}{R}} = \frac{2 P R}{P+R}}
 \end{equation}
-
+C'est cette grandeur qui m'a servi à juger de l'exactitude de mon détecteur dans les partie suivantes.
 
 \subsection{Résultats du détecteur de \texttt{19px}}
 Après entraînement sur un jeu d'images de panneaux STOP, j'ai obtenu les résultats suivants :
@@ -307,11 +330,11 @@ Après entraînement sur un jeu d'images de panneaux STOP, j'ai obtenu les résu
         \hline
         \hline
 
-        1, 5, 10 & \multirow{2}{*}{324 / 4548 / 1:14} & \multirow{2}{*}{69 / 3450 / 1\!:50} & 96,7 \% & 81,3 \% & 0,633 ms \\
+        1, 5, 10 & \multirow{2}{*}{324 / 4548 / 1:14} & \multirow{2}{*}{69 / 3450 / 1\!:50} & {\color{BrickRed} 96,7 \%} & {\color{BrickRed} 81,3 \%} & {\color{PineGreen} 0,633 ms} \\
 
         \cline{1-1} \cline{4-6}
 
-        1, 5, 10, 20, 50 &  &  & 98,6 \% & 91,5 \% & 0,696 ms \\
+        1, 5, 10, 20, 50 &  &  & {\color{PineGreen} 98,6 \%} & {\color{PineGreen} 91,5 \%} & {\color{BrickRed} 0,696 ms} \\
 
         \hline
     \end{tabular}
@@ -335,11 +358,11 @@ J'ai par la suite testé mon détecteur sur des images de taille standard, et ai
         \hline
         \hline
 
-        \multirow{2}{*}{1, 5, 10, 20, 50} & 3 & 1,5 & \multirow{2}{*}{302 / 433 / 1\!:1,43} & 96,3 \% & 81,5\% & 0,17 s & 5,9 \\
+        \multirow{2}{*}{1, 5, 10, 20, 50} & 3 & 1,5 & \multirow{2}{*}{302 / 433 / 1\!:1,43} & {\color{BrickRed} 96,3 \%} & {\color{BrickRed} 81,5\%} & {\color{PineGreen} 0,17 s} & {\color{PineGreen} 5,9} \\
 
         \cline{2-3} \cline{5-8}
 
-         & 2 & 1,25 & & 98,2 \% & 89,4 \% & 0,35 s & 2,8 \\
+         & 2 & 1,25 & & {\color{PineGreen} 98,2 \%} & {\color{PineGreen} 89,4 \%} & {\color{BrickRed} 0,35 s} & {\color{BrickRed} 2,8} \\
 
         \hline
     \end{tabular}
@@ -350,22 +373,200 @@ J'ai par la suite testé mon détecteur sur des images de taille standard, et ai
 Des valeurs plus faibles du couple $(\Delta, s)$ ont tendance à augmenter le F-Score, mais en augmentant le temps moyen de classification.
 
 \section{Conclusion}
-L'apprentissage automatique par \textit{AdaBoost} et son utilisation dans le cadre de la méthode de Viola et Jones s'avère être un algorithme intuitivement simple, de par son charactère glouton, mais néanmoins efficace.
+L'apprentissage automatique par \textit{AdaBoost} et son utilisation dans le cadre de la méthode de Viola et Jones s'avère être un algorithme intuitivement simple, de par son charactère glouton, mais néanmoins efficace. Le principe de \textit{boosting} me semble être généralisable à d'autres domaines de l'apprentissage supervisé.
 
 \newpage
 
 \section{Annexes}
+%\subsection{Complexité de l'image intégrale}
+%On introduit les deux suites suivantes, calculées par récurrence :
+%\begin{equation}
+%    \begin{cases}
+%        s(x, -1) = 0 = ii(-1, y) = 0 \\
+%        s(x, y) = s(x, y-1) + i(x, y) \\
+%        ii(x, y) = ii(x-1, y) + s(x, y)
+%    \end{cases}
+%\end{equation}%
+%
+%On remarque que par récurrence, $s(x, y)$ contient la somme des coefficients la ligne $y$, de $0$ à $x$. Ceci permet de calculer $(ii)$ avec une complexité linéaire en le nombre de pixels de l'image, soit la même complexité que pour le seul calcul de la somme de tous les pixels dans l'image, correspondant au sous-rectangle maximal.
+
 \subsection{Complexité de l'image intégrale}
-On introduit les deux suites suivantes, calculées par récurrence :
+En notant $(i(x, y))$ l'image source et $(ii(x, y))$ l'image intégrale, on a la formule de récurrence suivante :
 \begin{equation}
     \begin{cases}
-        s(x, -1) = 0 = ii(-1, y) = 0 \\
-        s(x, y) = s(x, y-1) + i(x, y) \\
-        ii(x, y) = ii(x-1, y) + s(x, y)
+        ii(1, 1) = i(1, 1) \\
+        ii(x, y) = i(x, y) + ii(x-1, y) + ii(x, y) - ii(x-1, y-1)
     \end{cases}
 \end{equation}
 
-On remarque que par récurrence, $s(x, y)$ contient la somme des coefficients la ligne $y$, de $0$ à $x$. Ceci permet de calculer $(ii)$ avec une complexité linéaire en le nombre de pixels de l'image, soit la même complexité que pour le seul calcul de la somme de tous les pixels dans l'image, correspondant au sous-rectangle maximal.
+Ceci permet de calculer $(ii)$ avec une complexité linéaire en le nombre de pixels de l'image, soit la même complexité que pour le seul calcul de la somme de tous les pixels dans l'image, correspondant au sous-rectangle maximal.
+
+\subsection{Justification formelle du fonctionnement d'\textit{AdaBoost}}
+\label{sec:preuve-boost}
+On considère un jeu d'entraînement $(x_i, y_i) \in \mathscr{M}_{n, n}(\mathbb{R})\times \{-1, 1\}$ (un label négatif est ici représenté par $y_i = -1$ et non pas par $y_i = 0$). Montrons que l'\autoref{algo:adaboost} est d'exactitude croissante. On définit pour cela la fonction de perte exponentielle $L$ \cite{wang} :
+
+\begin{equation}
+    L(C^{fort}(x), y) := \exp(-y \cdot C^{fort}(x))
+\end{equation}
+où l'on a défini le classificateur fort suivant, constituté de $T$ classificateurs faibles :
+
+\[
+    C^{fort}(x) = \sum_{t=1}^T \alpha_t \cdot C_t^{faible}(x)
+\]
+
+L'objectif de l'algorithme est de choisir les $(C_t^{faible})_{1 \leq t \leq T}$ et les $(\alpha_t)_{1 \leq t \leq T}$ qui minimisent la fonction de perte, c'est à dire :
+
+\[
+    \min_{(\alpha_t)_{1 \leq t \leq T},(C_t^{faible})_{1 \leq t \leq T}} w_{1, i} \cdot L\left(\sum_{t=1}^T \alpha_t \cdot C_t^{faible}(x_i), y_i\right)
+\]
+
+Supposons alors $t-1$ classificateurs choisis et posons $Z_{t+1}$ le minimum de la fonction de perte après le choix du $t$-ième classificateur :
+
+\begin{equation}
+    Z_{t+1} := \min_{\alpha_t, C_t^{faible}} \sum_{i=1}^n D_i(t+1)= \min_{\alpha_t, C_t^{faible}} \sum_{i=1}^n w_{1, i} \exp\left(-y_i \cdot \sum_{s=1}^t \alpha_s C_s^{faible}(x_i)\right)
+\end{equation}
+
+En factorisant il vient :
+
+\begin{equation*}
+\begin{split}
+    Z_{t+1}  & = \min_{\alpha_t, C_t^{faible}} \sum_{i=1}^n D_i(t) \exp\left(-y_i \alpha_t C_t^{faible}(x_i)\right) \\
+    & = \min_{\alpha_t, C_t^{faible}} e^{-\alpha_t} \sum_{i=1}^n D_i(t) \cdot \delta(y_i, C_t^{faible}(x_i)) + e^{\alpha_t} \sum_{i=1}^n D_i(t) \cdot \delta(-y_i, C_t^{faible}(x_i)) \\
+    & = \min_{\alpha_t, C_t^{faible}} e^{-\alpha_t} \sum_{i=1}^n D_i(t)  + (e^{\alpha_t} - e^{-\alpha_t}) \sum_{i=1}^n D_i(t) \cdot \delta(-y_i, C_t^{faible}(x_i)) \\
+    & = Z_t \min_{\alpha_t, C_t^{faible}} e^{-\alpha_t}  + (e^{\alpha_t} - e^{-\alpha_t}) \sum_{i=1}^n \frac{D_i(t)}{Z_t} \cdot \delta(-y_i, C_t^{faible}(x_i))
+\end{split}
+\end{equation*}
+
+La forme de cette expression sépare les deux variables $\alpha_t$ et $C_t^{faible}$ sur lesquelles portent le minimum. Cela justifie que l'on peut sélectionner dans un premier temps le classificateur $C_t^{faible}$, puis ensuite choisir $\alpha_t$.
+
+Pour cela, on définit naturellement l'erreur minimale et le classificateur associé :
+\begin{equation*}
+\begin{split}
+    \varepsilon_t & := \min_{C^{faible}} \sum_{i=1}^n \frac{D_i(t)}{Z_t} \cdot \delta(-y_i, C_t^{faible}(x_i)) \\
+    {C_t^{faible}} & := \argmin_{C^{faible}} \sum_{i=1}^n \frac{D_i(t)}{Z_t} \cdot \delta(-y_i, C_t^{faible}(x_i))
+\end{split}
+\end{equation*}
+
+Et l'on choisit dans un second temps le $\alpha_t$ qui minimise le tout :
+
+\begin{equation*}
+    \alpha_t := \argmin_{\alpha > 0} e^{-\alpha} +  (e^{\alpha} - e^{-\alpha}) \varepsilon_t = \frac{1}{2} \ln\left(\frac{1-\varepsilon_t}{\varepsilon_t}\right)
+\end{equation*}
+
+Le calcul de l'argument minimisant cette quantité pouvant être fait par une simple étude de fonction. Imposer $\alpha > 0$ revient à demander $\varepsilon_t > \frac{1}{2}$, soit que au moins un classificateur faible classe mieux que le hasard, ce qui est un prérequis de tout algorithme de \textit{boosting}. Sous ces conditions :
+
+\begin{equation}
+    Z_{t+1} = Z_t \times 2 \sqrt{\varepsilon_t \cdot (1 - \varepsilon_t)} \leq Z_t
+\end{equation}
+
+Ce qui montre bien la décroissance de la fonction de perte du classificateur fort.
+
+\subsection{Éléments significatifs du code}
+\subsubsection{Génération de toutes les \textit{features}}
+\label{sec:construction-features}
+
+\begin{python}
+def construction_features(format_image: tuple) -> list:
+    hauteur, largeur = format_image
+    features = []
+
+    for l in range(1, largeur+1):
+        for h in range(1, hauteur+1):
+            # Pour toutes les dimensions possibles de rectangles
+            x = 0
+            while x + l < largeur:
+                y = 0
+                while y + h < hauteur:
+                    # Pour tous les rectangles possibles
+                    
+                    # Creation des sous-zones possibles
+                    normal = RegionRectangulaire(x, y, w, h)
+                    droite = RegionRectangulaire(x + w, y, w, h)
+                    bas = RegionRectangulaire(x, y + h, w, h)
+
+                    droite_2 = RegionRectangulaire(x + 2*w, y, w, h)
+                    bas_2 = RegionRectangulaire(x, y + 2*h, w, h)
+
+                    bas_droite = RegionRectangulaire(x + w, y + h, w, h)
+
+                    # Features avec 2 rectangles
+                    if x + 2*w < width: # Adjacent horizontalement
+                        features.append(([droite], [normal]))
+                    if y + 2*h < height: # Adjacent verticalement
+                        features.append(([direct], [bas]))
+
+                    # Features avec 3 rectangles
+                    if x + 3 * w < width: # Adjacent horizontalement
+                        features.append(([droite], [droite_2, normal]))
+                    if y + 3 * h < height: # Adjacent horizontalement
+                        features.append(([bas], [bas_2, normal]))
+
+                    # Features avec 4 rectangles
+                    if x + 2 * l < largeur and y + 2 * h < hauteur:
+                        features.append(([droite, bas], [normal, bas_droite]))
+
+                    y += 1
+                x += 1
+    return np.array(features, dtype=object)
+\end{python}
+
+\subsubsection{Implémentation de \textit{AdaBoost}} \label{sec:impl-adaboost}
+\begin{python}
+def AdaBoost(jeu_entrainement: list) -> ClassificateurFaible list * int list:    
+    classificateurs, alpha = [], []
+
+    # Comptage des exemples positifs et negatifs
+    nb_pos = 0
+    nb_neg = 0
+    for (image, y) in jeu_entrainement:
+        if y:
+            nb_pos += 1
+        else:
+            nb_neg += 1
+    
+    # Initialisation des poids et conversion en image integrale
+    donnees = []
+    poids = np.zeros(len(jeu_entrainement))
+    for i in range(len(jeu_entrainement)):
+        donnees.append((integrale(jeu_entrainement[i][0]), jeu_entrainement[i][1]))
+        if jeu_entrainement[i][1]:
+            poids[i] = 1.0 / (2 * nb_pos)
+        else:
+            poids[i] = 1.0 / (2 * nb_neg)
+
+    # Construction des features et calcul de l'erreur sur chaque image
+    features = construction_features(donnees[0][0].shape)
+    X, y = application_features(features, donnees)
+
+    for t in range(len(features)):
+        # Selection du classificateur avec l'erreur la plus faible
+        c_faibles = train_weak_classifiers(X, y, features, weights)
+
+        clf, erreur, classements = meilleur_classificateur(c_faibles, weights, donnees)
+        classificateurs.append(clf)
+
+        # Calcul de beta et mise a jour des poids
+        beta = erreur / (1.0 - erreur)
+        for i in range(len(classements_jeu)):
+            poids[i] = poids[i] * (beta ** (1 - classements[i]))
+        alpha = -np.log(beta)
+        alphas.append(alpha)
+
+        # Normalisation des poids
+        poids = poids / np.linalg.norm(poids)
+
+    return classificateurs, alpha
+\end{python}
+
+\subsubsection{Classement par la Cascade} \label{sec:code-cascade}
+\begin{python}
+def classement_cascade(cascade: list, image:list) -> bool:
+    ii = integrale(image)
+    for clf in cascade: # pour chaque classificateur fort de la cascade
+        if not clf.classifier(ii): # des que l'image est classee negativement
+            return False # la cascade classe negativement
+    return True # si l'image passe tous les classificateurs, elle est positive
+\end{python}
 
 \begin{thebibliography}{5}
     
