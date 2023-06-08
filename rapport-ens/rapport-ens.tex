@@ -28,6 +28,8 @@
 \usepackage{listingsutf8}
 \usepackage{pythonhighlight}
 \usepackage{mathrsfs}
+\usepackage{pgfplots}
+
 
 \DeclareMathOperator*{\argmax}{argmax}
 \DeclareMathOperator*{\argmin}{argmin}
@@ -87,6 +89,7 @@ Le score d'une \textit{feature} $f$ peut être évalué sur une image $x$ à l'a
 où $r(x)$ désigne la somme des pixels dans la région délimitée par $r$. Une méthode efficace du calcul de $r(x)$ sera donnée par l'équation \ref{somme-region}. Intuitivement, la formule \ref{score-feature} traduit que le score d'une \textit{feature} est d'autant plus faible que les zones négatives compensent les zones positives.
 
 
+
 Le nombre de \textit{features} possibles croît exponentiellement avec le côté de l'image (voir la \autoref{fig:nb-features}), d'où la nécessité d'entraîner dans un premier temps un détecteur de côté faible. La construction de toutes les \textit{features} possibles est implémentée en Partie \ref{sec:construction-features} de l'annexe.
 
 \begin{wrapfigure}{r}{0.4\textwidth}
@@ -122,7 +125,7 @@ Une approche naïve consisterait à recalculer, à chaque évaluation du score d
         \centering
         \caption{Exemple d'image intégrale}
     %\end{figure}
-    \end{wrapfigure}
+\end{wrapfigure}
 
 Pour réduire cette complexité, la méthode de Viola et Jones introduit \textbf{l'image intégrale}. Si l'image considérée est $(i(x, y))$, alors l'image intégrale, notée $(ii(x, y))$ vérifie :
 
@@ -151,6 +154,8 @@ Chaque tuple est constitué d'une image contenant ou ne contenant pas l'objet à
 L'algorithme \textit{AdaBoost} est un algorithme glouton qui sélectionne un à un les $T$ meilleurs classificateurs parmi les $50\,000$ présents dans l'image de \texttt{19px} de côté. Son initialisation consiste en l'affectation à chaque image d'un poids, qui équilibre l'importance des images positives et négatives. Ensuite, la sélection d'un classificateur se fait en trois grandes étapes : l'erreur de chaque classificateur est calculée selon le classement qu'il fait de chaque image, et de son poids ; le classificateur d'erreur minimale est sélectionné ; les poids sont mis à jours pour prendre en compte le nouveau classificateur, puis normalisés.
 
 Une implémentation en est également donnée en Partie \ref{sec:impl-adaboost} de l'annexe.
+
+On notera $\delta(i, j)$ le symbole de Kronecker.
 
 %\begin{wrapfigure}{L}{0.6\textwidth}
 %\begin{minipage}{0.6\textwidth}
@@ -208,7 +213,7 @@ En toute généralité, la complexité de \textit{AdaBoost} est en $O(n \cdot F 
 Après sélection des $T$ classificateurs faibles, l'algorithme les combine en un unique classificateur fort $C^{fort}$, défini par :
 
 \begin{equation}
-    C_T^{fort}(x) = 
+    C^{fort}(x) = 
     \begin{cases}
     1 \:\: si \:\: \sum_{t=1}^T \alpha_t C_t^{faible}(x) \leq \frac{1}{2} \sum_{t=1}^T \alpha_t \\
     0 \:\: sinon
@@ -229,7 +234,7 @@ Selon sa valeur de $T$, un classificateur fort est soit très efficace (pour $T$
 
 Une image analysée par la cascade va être classée successivement par une suite $(C_T^{fort})_T$ pour des valeurs de $T$ croissantes. Une image est alors rejetée par la cascade dès qu'elle est classée négativement par un des classificateurs forts, permettant une grande efficacité. Au contraire, une image ultimement classée positivement par la cascade sera passée à travers des classificateurs forts avec $T$ très grands, garantissant un faible nombre de faux positifs.
 
-Une simple implémentation de la cascade est donnée en Partie \ref{sec:code-cascade} de l'annexe.
+Une implémentation simple du mécanisme de cascade est donnée en Partie \ref{sec:code-cascade} de l'annexe.
 
 \subsection{Application à des images de taille standard}
 \label{sec:taille_standard}
@@ -292,7 +297,7 @@ Toute quantification de l'exactitude est une expression des coefficients de la \
 \subsubsection{Approche standard}
 Il semble intuitif de poser l'exactitude comme étant :
 \[
-    A = \frac{bons\ classements}{total} 
+    A = \frac{\textnormal{bons classements}}{\textnormal{total}}
 \]
 Ou encore avec les notations de la \autoref{fig:matrice-confusion} :
 \begin{equation}
@@ -306,9 +311,9 @@ On introduit alors souvent le F-Score (ou $F_1$-Score), défini comme la moyenne
 
 La précision et le rappel sont définis comme :
 \begin{equation}
-    P = \frac{bons\ classements}{classements\ positifs} = \boxed{\frac{V_p}{V_P + F_p}}
+    P = \frac{\textnormal{bons classements}}{\textnormal{classements positifs}} = \boxed{\frac{V_p}{V_P + F_p}}
     \hspace{5em}
-    R = \frac{bons\ classements}{images\ positives} = \boxed{\frac{V_p}{V_P + F_n}}
+    R = \frac{\textnormal{bons classements}}{\textnormal{images positives}} = \boxed{\frac{V_p}{V_P + F_n}}
 \end{equation}
 
 Finalement, le F-Score est donnée comme la moyenne harmonique des deux :
@@ -414,16 +419,30 @@ où l'on a défini le classificateur fort suivant, constituté de $T$ classifica
     C^{fort}(x) = \sum_{t=1}^T \alpha_t \cdot C_t^{faible}(x)
 \]
 
-L'objectif de l'algorithme est de choisir les $(C_t^{faible})_{1 \leq t \leq T}$ et les $(\alpha_t)_{1 \leq t \leq T}$ qui minimisent la fonction de perte, c'est à dire :
+L'objectif de l'algorithme est de choisir les $(C_t^{faible})_{1 \leq t \leq T}$ et les $(\alpha_t)_{1 \leq t \leq T}$ qui minimisent la fonction de perte, c'est-à-dire, si $E = (C_1^{faible}, ..., C_m^{faible})$ désigne l'ensemble des classificateurs :
 
 \[
-    \min_{(\alpha_t)_{1 \leq t \leq T},(C_t^{faible})_{1 \leq t \leq T}} w_{1, i} \cdot L\left(\sum_{t=1}^T \alpha_t \cdot C_t^{faible}(x_i), y_i\right)
+    \argmin \biggl\{ 
+    \underbrace{
+        \sum_{i=1}^n w_{1, i} \cdot L\left(\sum_{t=1}^T \alpha_t \cdot C_t^{faible}(x_i), y_i\right) 
+    }_{
+        \textnormal{somme de l'erreur de $C^{fort}$ sur chaque image}
+    }
+    \; \bigg| \; 
+    \underbrace{
+        {(\alpha_t)_{1 \leq t \leq T} \in \mathbb{R_+^*}^T,(C_t^{faible})_{1 \leq t \leq T} \in E^T} 
+    \biggr\}
+    }_{
+        \textnormal{tous les choix de $C^{faible}$ et de $\alpha$ possibles}
+    }
 \]
 
 Supposons alors $t-1$ classificateurs choisis et posons $Z_{t+1}$ le minimum de la fonction de perte après le choix du $t$-ième classificateur :
 
 \begin{equation}
-    Z_{t+1} := \min_{\alpha_t, C_t^{faible}} \sum_{i=1}^n D_i(t+1)= \min_{\alpha_t, C_t^{faible}} \sum_{i=1}^n w_{1, i} \exp\left(-y_i \cdot \sum_{s=1}^t \alpha_s C_s^{faible}(x_i)\right)
+    Z_{t+1} 
+    := \min_{\alpha_t, C_t^{faible}} \sum_{i=1}^n D_i(t+1) 
+    := \min_{\alpha_t, C_t^{faible}} \sum_{i=1}^n w_{1, i} \exp\left(-y_i \cdot \sum_{s=1}^t \alpha_s C_s^{faible}(x_i)\right)
 \end{equation}
 
 En factorisant il vient :
@@ -442,8 +461,8 @@ La forme de cette expression sépare les deux variables $\alpha_t$ et $C_t^{faib
 Pour cela, on définit naturellement l'erreur minimale et le classificateur associé :
 \begin{equation*}
 \begin{split}
-    \varepsilon_t & := \min_{C^{faible}} \sum_{i=1}^n \frac{D_i(t)}{Z_t} \cdot \delta(-y_i, C_t^{faible}(x_i)) \\
-    {C_t^{faible}} & := \argmin_{C^{faible}} \sum_{i=1}^n \frac{D_i(t)}{Z_t} \cdot \delta(-y_i, C_t^{faible}(x_i))
+    \varepsilon_t & := \min_{C_k^{faible}} \sum_{i=1}^n \frac{D_i(t)}{Z_t} \cdot \delta(-y_i, C_k^{faible}(x_i)) \\
+    {C_t^{faible}} & := \argmin_{C_k^{faible}} \sum_{i=1}^n \frac{D_i(t)}{Z_t} \cdot \delta(-y_i, C_k^{faible}(x_i))
 \end{split}
 \end{equation*}
 
@@ -452,6 +471,17 @@ Et l'on choisit dans un second temps le $\alpha_t$ qui minimise le tout :
 \begin{equation*}
     \alpha_t := \argmin_{\alpha > 0} e^{-\alpha} +  (e^{\alpha} - e^{-\alpha}) \varepsilon_t = \frac{1}{2} \ln\left(\frac{1-\varepsilon_t}{\varepsilon_t}\right)
 \end{equation*}
+
+\begin{wrapfigure}[10]{r}{0.34\textwidth}
+    \begin{tikzpicture}
+        \begin{axis}[width=6cm,height=6cm,
+            xlabel={$\varepsilon$},ylabel={$\frac{1}{2}\ln(\frac{1-\varepsilon}{\varepsilon})$}]
+         \addplot[domain=0:0.5, smooth, samples=501]
+            {ln((1-x)/(2*x))}; 
+        \end{axis}
+    \end{tikzpicture}
+    \caption{Allure de $\alpha_t(\varepsilon_t)$}
+\end{wrapfigure}
 
 Le calcul de l'argument minimisant cette quantité pouvant être fait par une simple étude de fonction. Imposer $\alpha > 0$ revient à demander $\varepsilon_t > \frac{1}{2}$, soit que au moins un classificateur faible classe mieux que le hasard, ce qui est un prérequis de tout algorithme de \textit{boosting}. Sous ces conditions :
 
@@ -557,6 +587,8 @@ def AdaBoost(jeu_entrainement: list) -> ClassificateurFaible list * int list:
 
     return classificateurs, alpha
 \end{python}
+
+\newpage
 
 \subsubsection{Classement par la Cascade} \label{sec:code-cascade}
 \begin{python}
