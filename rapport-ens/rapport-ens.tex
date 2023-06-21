@@ -92,7 +92,7 @@ où $r(x)$ désigne la somme des pixels dans la région délimitée par $r$. Une
 
 Le nombre de \textit{features} possibles croît exponentiellement avec le côté de l'image (voir la \autoref{fig:nb-features}), d'où la nécessité d'entraîner dans un premier temps un détecteur de côté faible. La construction de toutes les \textit{features} possibles est implémentée en Partie \ref{sec:construction-features} de l'annexe.
 
-\begin{wrapfigure}{r}{0.4\textwidth}
+\begin{wrapfigure}[13]{r}{0.4\textwidth}
     %\begin{figure}[h]
         \includegraphics[scale = 0.35]{nombre_features_cut}
         \centering
@@ -262,7 +262,7 @@ Une telle quantité d'images n'existe pas pour l'objet sur lequel je me suis con
     \caption{Étapes du pré-traitement d'une image}
 \end{figure}
 
-La première étape consiste en un recadrage manuel de l'image. La seconde, réalisée par un script, redimensionne l'image vers \texttt{19px} de côté par interpolation bilinéaire, et la convertit en niveaux de gris, chaque pixel appartenant finalement à $\llbracket 0, 255 \rrbracket$ (\texttt{8 bits}).
+La première étape consiste en un recadrage manuel de l'image. La seconde, réalisée par un script, redimensionne l'image vers \texttt{19px} de côté, et la convertit en niveaux de gris, chaque pixel appartenant finalement à $\llbracket 0, 255 \rrbracket$ (\texttt{8 bits}).
 
 Les images traitées sont finalement réparties en deux ensembles : un jeu d'entraînement et un jeu de test, pour éviter de tester le détecteur sur des images qu'il a déjà rencontré.
 
@@ -431,10 +431,10 @@ L'objectif de l'algorithme est de choisir les $(C_t^{faible})_{1 \leq t \leq T}$
     \; \bigg| \; 
     \underbrace{
         {(\alpha_t)_{1 \leq t \leq T} \in \mathbb{R_+^*}^T,(C_t^{faible})_{1 \leq t \leq T} \in E^T} 
+        }_{
+            \textnormal{tous les choix de $C^{faible}$ et de $\alpha$ possibles}
+            }
     \biggr\}
-    }_{
-        \textnormal{tous les choix de $C^{faible}$ et de $\alpha$ possibles}
-    }
 \]
 
 Supposons alors $t-1$ classificateurs choisis et posons $Z_{t+1}$ le minimum de la fonction de perte après le choix du $t$-ième classificateur :
@@ -510,25 +510,25 @@ def construction_features(format_image: tuple) -> list:
                     # Pour tous les rectangles possibles
                     
                     # Creation des sous-zones possibles
-                    normal = RegionRectangulaire(x, y, w, h)
-                    droite = RegionRectangulaire(x + w, y, w, h)
-                    bas = RegionRectangulaire(x, y + h, w, h)
+                    normal = RegionRectangulaire(x, y, l, h)
+                    droite = RegionRectangulaire(x + l, y, l, h)
+                    bas = RegionRectangulaire(x, y + h, l, h)
 
-                    droite_2 = RegionRectangulaire(x + 2*w, y, w, h)
-                    bas_2 = RegionRectangulaire(x, y + 2*h, w, h)
+                    droite_2 = RegionRectangulaire(x + 2*l, y, l, h)
+                    bas_2 = RegionRectangulaire(x, y + 2*h, l, h)
 
-                    bas_droite = RegionRectangulaire(x + w, y + h, w, h)
+                    bas_droite = RegionRectangulaire(x + l, y + h, l, h)
 
                     # Features avec 2 rectangles
-                    if x + 2*w < width: # Adjacent horizontalement
+                    if x + 2*w < largeur: # Adjacent horizontalement
                         features.append(([droite], [normal]))
-                    if y + 2*h < height: # Adjacent verticalement
+                    if y + 2*h < hauteur: # Adjacent verticalement
                         features.append(([direct], [bas]))
 
                     # Features avec 3 rectangles
-                    if x + 3 * w < width: # Adjacent horizontalement
+                    if x + 3 * w < largeur: # Adjacent horizontalement
                         features.append(([droite], [droite_2, normal]))
-                    if y + 3 * h < height: # Adjacent horizontalement
+                    if y + 3 * h < hauteur: # Adjacent horizontalement
                         features.append(([bas], [bas_2, normal]))
 
                     # Features avec 4 rectangles
@@ -542,7 +542,7 @@ def construction_features(format_image: tuple) -> list:
 
 \subsubsection{Implémentation de \textit{AdaBoost}} \label{sec:impl-adaboost}
 \begin{python}
-def AdaBoost(jeu_entrainement: list) -> ClassificateurFaible list * int list:    
+def AdaBoost(jeu_entrainement: list, T: int) -> ClassificateurFaible list * int list:    
     classificateurs, alpha = [], []
 
     # Comptage des exemples positifs et negatifs
@@ -568,11 +568,11 @@ def AdaBoost(jeu_entrainement: list) -> ClassificateurFaible list * int list:
     features = construction_features(donnees[0][0].shape)
     X, y = application_features(features, donnees)
 
-    for t in range(len(features)):
+    for t in range(T):
         # Selection du classificateur avec l'erreur la plus faible
-        c_faibles = train_weak_classifiers(X, y, features, weights)
+        c_faibles = entrainement_classificateurs_faibles(X, y, features, poids)
 
-        clf, erreur, classements = meilleur_classificateur(c_faibles, weights, donnees)
+        clf, erreur, classements = meilleur_classificateur(c_faibles, poids, donnees)
         classificateurs.append(clf)
 
         # Calcul de beta et mise a jour des poids
