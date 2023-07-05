@@ -1,6 +1,6 @@
 # Car-Computer-Vision
 ## Détection d'objets dans un flux vidéo pour caméra embarquée sur un véhicule
-Mon projet de TIPE pour l'année 2023, visant la création d'un algorithme de détection d'objets dans une image. Le rapport complet est disponible [ici](demonstrations/rapport-ens/rapport-ens.pdf).
+Mon projet de TIPE pour l'année 2023, visant la création d'un algorithme de détection d'objets dans une image. Le rapport complet est disponible [ici](rapport-ens/rapport-ens.pdf).
 
 ### Contenu
 - Implémentation simple avec OpenCV de détection de panneaux, voitures, et visages, utilisant l'algorithme de **Viola-Jones** : `source/opencv_impl/viola_jones`
